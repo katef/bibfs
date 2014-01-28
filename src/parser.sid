@@ -1,0 +1,85 @@
+/* $Id: parser.sid 306 2011-07-17 13:37:02Z kate $ */
+
+%types%
+
+%terminals%
+
+	!error;
+	!panic;
+
+	eof;
+	!nl;
+	str;
+	equ;
+	comma;
+	obrace;
+	cbrace;
+
+%productions%
+
+	item: () -> () = {
+		str;
+	||
+		obrace;
+		str; /* TeX escape: \thinsp, -- etc */
+		cbrace;
+	};
+
+	value: () -> () = {
+		item;
+		value;
+	||
+		$;
+	};
+
+	fields: () -> () [
+
+		field: () -> () = {
+			str; /* name */
+			equ;
+			{
+				str;
+			||
+				obrace;
+				value;
+				cbrace;
+			};
+			comma;
+		};
+
+	] = {
+		field;
+		fields;
+	||
+		$;
+	};
+
+	entries: () -> () [
+
+		entry: () -> () = {
+			str; /* type */
+			obrace;
+			str; /* key */
+			comma;
+
+			fields;
+
+			cbrace;
+		};
+
+	] = {
+		entry;
+		entries;
+	||
+		$;
+	};
+
+	bib: () -> () = {
+		entries;
+		eof;
+	};
+
+%entry%
+
+	bib;
+
