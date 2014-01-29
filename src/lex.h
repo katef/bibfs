@@ -10,6 +10,7 @@ enum lex_type {
 	tok_str    = '\'',
 	tok_equ    = '=',
 	tok_comma  = ',',
+	tok_at     = '@',
 	tok_obrace = '{',
 	tok_cbrace = '}'
 };
@@ -21,7 +22,8 @@ struct lex_tok {
 };
 
 struct lex_state {
-	char buf[4096];
+	unsigned b;
+	char buf[8192];
 	const char *p;
 	FILE *f;
 };

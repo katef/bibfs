@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 2
 
 #include <unistd.h>
+#include <assert.h>
 #include <stdio.h>
 #include <errno.h>
 
@@ -32,6 +33,7 @@ main(int argc, char *argv[])
 {
 	struct lex_state l;
 
+	l.b = 0;
 	l.f = stdin;
 	l.p = l.buf;
 
@@ -64,6 +66,8 @@ main(int argc, char *argv[])
 
 		do {
 			lex_next(&l, &t);
+
+			assert(t.type != tok_nl);
 
 			if (t.type == tok_error) {
 				goto error;

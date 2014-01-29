@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <errno.h>
@@ -11,9 +12,55 @@
 #define WHITE " \t\v\f\n"
 
 static enum lex_type
-lex_push(const char **p, const char **s, const char **e)
+zone_body(struct lex_state *l, const char **p, const char **s, const char **e)
 {
+	assert(l != NULL);
 	assert(p != NULL);
+	assert(s != NULL && e != NULL);
+	assert(l->b == 1);
+
+	*s = *p;
+
+	for (;;) {
+		switch (**p) {
+		case '\n':
+		case '\0':
+			return tok_panic;
+
+		case '}':
+			if (l->b == 1) {
+				*e = *p;
+				(*p)++;
+				return tok_str;
+			}
+
+			l->b--;
+			(*p)++;
+			continue;
+
+		case '{':
+			if (l->b == UINT_MAX) {
+				errno = ERANGE;
+				return tok_error;
+			}
+
+			l->b++;
+			(*p)++;
+			continue;
+
+		default:
+			(*p)++;
+			continue;
+		}
+	}
+}
+
+static enum lex_type
+zone_main(struct lex_state *l, const char **p, const char **s, const char **e)
+{
+	assert(l != NULL);
+	assert(p != NULL);
+	assert(s != NULL && e != NULL);
 
 	*p += strspn(*p, WHITE);
 
@@ -25,26 +72,45 @@ lex_push(const char **p, const char **s, const char **e)
 		*e = *s;
 		return tok_nl;
 
-	case '=':
-	case ',':
 	case '{':
-	case '}':
+		if (l->b == 1) {
+			(*p)++;
+			return zone_body(l, p, s, e);
+		}
+
+		l->b = 1;
+
 		*s = *p;
 		*e = *s + 1;
 		(*p)++;
 		return **s;
 
-	case '\'':
+	case '}':
+		if (l->b != 1) {
+			errno = EINVAL;
+			return tok_error;
+		}
+
+		l->b = 0;
+	case '=':
+	case ',':
+	case '@':
+		*s = *p;
+		*e = *s + 1;
+		(*p)++;
+		return **s;
+
+	case '\"':
 		(*p)++;
 		*s = *p;
-		*p += strcspn(*p, "\'");
+		*p += strcspn(*p, "\"");
 		*e = *(p - 1);
-		(*p) += **p == '\'';
+		(*p) += **p == '\"';
 		return tok_str;
 
 	default:
 		*s = *p;
-		*p += strcspn(*p, WHITE "%=,{}'");
+		*p += strcspn(*p, WHITE "@%=,{}\"");
 		*e = *p;
 		return tok_str;
 	}
@@ -96,7 +162,12 @@ lex_next(struct lex_state *l, struct lex_tok *t)
 		l->p = l->buf;
 	}
 
-	t->type = lex_push(&l->p, &t->s, &t->e);
+	t->type = zone_main(l, &l->p, &t->s, &t->e);
+
+	if (t->type == tok_nl) {
+		lex_next(l, t);
+		return;
+	}
 
 	if (debug & DEBUG_LEX) {
 		const char *name;
