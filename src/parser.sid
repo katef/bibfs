@@ -1,6 +1,8 @@
-/* $Id: parser.sid 306 2011-07-17 13:37:02Z kate $ */
-
 %types%
+
+	string;
+	field;
+	entry;
 
 %terminals%
 
@@ -9,73 +11,81 @@
 
 	eof;
 	!nl;
-	str;
 	equ;
 	comma;
+	at;
 	obrace;
 	cbrace;
 
+	str: () -> (:string);
+
 %productions%
 
-	item: () -> () = {
-		str;
-	||
-		obrace;
-		str; /* TeX escape: \thinsp, -- etc */
-		cbrace;
-	};
+	<new-field>: (:string, :string) -> (:field);
+	<add-field>: (:field, :field) -> (:field);
+	<null-field>: () -> (:field);
 
-	value: () -> () = {
-		item;
-		value;
-	||
-		$;
-	};
+	<new-entry>: (:string, :string, :field) -> (:entry);
+	<add-entry>: (:entry, :entry) -> (:entry);
+	<null-entry>: () -> (:entry);
 
-	fields: () -> () [
+	fields: () -> (f :field) [
 
-		field: () -> () = {
-			str; /* name */
+		field: () -> (f :field) = {
+			n = str; /* name */
 			equ;
-			{
-				str;
-			||
-				obrace;
-				value;
-				cbrace;
-			};
-			comma;
+			v = str; /* value */
+
+			f = <new-field>(n, v);
 		};
 
 	] = {
-		field;
-		fields;
+		a = field;
+		{
+			f = a;
+		||
+			comma;
+			b = fields;
+			f = <add-field>(a, b);
+		};
 	||
-		$;
+		f = <null-field>;
 	};
 
-	entries: () -> () [
+	entries: () -> (e :entry) [
 
-		entry: () -> () = {
-			str; /* type */
+		entry: () -> (e :entry) = {
+			at;
+			t = str; /* type */
 			obrace;
-			str; /* key */
+			k = str; /* key */
 			comma;
 
-			fields;
+			f = fields;
 
 			cbrace;
+
+			e = <new-entry>(t, k, f);
+
+		/* ## TODO: panic until next @ */
 		};
 
 	] = {
-		entry;
-		entries;
-	||
-		$;
+		a = entry;
+		{
+			e = a;
+		||
+			b = entries;
+			e = <add-entry>(a, b);
+		};
 	};
 
-	bib: () -> () = {
-		entries;
+	bib: () -> (e :entry) = {
+		{
+			e = entries;
+		||
+			e = <null-entry>;
+		};
 		eof;
 	};
 
