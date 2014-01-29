@@ -34,14 +34,13 @@
 	typedef struct bib_field * field;
 
 	struct act_state {
-		struct lex_state l;
 		struct lex_tok t;
 		enum lex_type type, save;
 	};
 
 	#define CURRENT_TERMINAL act_state->type
 	#define ERROR_TERMINAL   tok_error
-	#define ADVANCE_LEXER    lex_next(&act_state->l, &act_state->t); \
+	#define ADVANCE_LEXER    lex_next(lex_state, &act_state->t); \
 	                         act_state->type = act_state->t.type;
 	#define SAVE_LEXER(tok)  act_state->save = tok;
 	#define RESTORE_LEXER    act_state->type = act_state->save;
@@ -87,9 +86,6 @@
 	@};
 
 	<add-field>: (a :field, b :field) -> (f :field) = @{
-		assert(@a != NULL);
-		assert(@b != NULL);
-
 		@f = NULL;
 
 		if (debug & DEBUG_ACT) {
@@ -120,9 +116,6 @@
 	@};
 
 	<add-entry>: (a :entry, b :entry) -> (f :entry) = @{
-		assert(@a != NULL);
-		assert(@b != NULL);
-
 		@f = NULL;
 
 		if (debug & DEBUG_ACT) {
@@ -143,22 +136,18 @@
 %trailer% @{
 
 	struct bib_entry *bib_parse(FILE *f) {
-		struct act_state act_state_s;
-		struct act_state *act_state;
-		struct lex_state lex_state;
+		struct lex_state l, *lex_state = &l;
+		struct act_state a, *act_state = &a;
 		struct bib_entry *e;
 
 		assert(f != NULL);
 
-		lex_state.b = 0;
-		lex_state.f = f;
-		lex_state.p = lex_state.buf;
-
-		/* This is a workaround for ADVANCE_LEXER assuming a pointer */
-		act_state = &act_state_s;
+		l.b = 0;
+		l.f = f;
+		l.p = l.buf;
 
 		ADVANCE_LEXER;	/* XXX: what if the first token is unrecognised? */
-		p_bib(&lex_state, act_state, &e);
+		p_bib(lex_state, act_state, &e);
 
 		return e;
 	}

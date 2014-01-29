@@ -6,7 +6,7 @@
 #include <errno.h>
 
 #include "debug.h"
-#include "lex.h"
+#include "parser.h"
 
 unsigned debug;
 
@@ -15,9 +15,10 @@ debug_flags(const char *s)
 {
 	for ( ; *s != '\0'; s++) {
 		switch (*s) {
-		case 'a': debug = ~0U;          break;
-		case 'b': debug |= DEBUG_BUF;   break;
-		case 'l': debug |= DEBUG_LEX;   break;
+		case 'a': debug = ~0U;        break;
+		case 'b': debug |= DEBUG_BUF; break;
+		case 'l': debug |= DEBUG_LEX; break;
+		case 'c': debug |= DEBUG_ACT; break;
 
 		default:
 			fprintf(stderr, "-d: unrecognised flag '%c'\n", *s);
@@ -31,12 +32,6 @@ debug_flags(const char *s)
 int
 main(int argc, char *argv[])
 {
-	struct lex_state l;
-
-	l.b = 0;
-	l.f = stdin;
-	l.p = l.buf;
-
 	{
 		int c;
 
@@ -62,33 +57,22 @@ main(int argc, char *argv[])
 	}
 
 	{
-		struct lex_tok t;
+		struct bib_entry *e;
 
-		do {
-			lex_next(&l, &t);
+		errno = 0;
+		e =  bib_parse(stdin);
+		if (e == NULL && errno != 0) {
+			perror("bib_parse");
+		}
 
-			assert(t.type != tok_nl);
-
-			if (t.type == tok_error) {
-				goto error;
-			}
-
-			if (t.type == tok_panic) {
-				errno = ENOMEM;
-				goto error;
-			}
-		} while (t.type != tok_eof);
+		/* TODO: dump e */
 	}
 
 	return 0;
 
-error:
-
-	return 1;
-
 usage:
 
-	fprintf(stderr, "usage: bibfs [-d abl]\n");
+	fprintf(stderr, "usage: bibfs [-d ablc]\n");
 
 	return 1;
 }

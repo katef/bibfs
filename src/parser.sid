@@ -67,7 +67,7 @@
 
 			e = <new-entry>(t, k, f);
 
-		/* ## TODO: panic until next @ */
+		/* ## TODO: panic until next @. log paniced-over bytes somewhere */
 		};
 
 	] = {
