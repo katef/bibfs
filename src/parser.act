@@ -1,0 +1,169 @@
+/* $Id: parser.act 306 2011-07-17 13:37:02Z kate $ */
+
+%prefixes%
+
+	terminal = tok_;
+	function = p_;
+
+%persistents%
+
+	lex_state :lex_state;
+	act_state :act_state;
+
+%maps%
+
+	string -> string;
+	field  -> field;
+	entry  -> entry;
+
+%header% @{
+
+	#define _SVID_SOURCE
+
+	#include <assert.h>
+	#include <string.h>
+	#include <stdlib.h>
+	#include <stdio.h>
+
+	#include "debug.h"
+	#include "lex.h"
+	#include "bib.h"
+	#include "parser.h"
+
+	typedef char *             string;
+	typedef struct bib_field * field;
+
+	struct act_state {
+		struct lex_state l;
+		struct lex_tok t;
+		enum lex_type type, save;
+	};
+
+	#define CURRENT_TERMINAL act_state->type
+	#define ERROR_TERMINAL   tok_error
+	#define ADVANCE_LEXER    lex_next(&act_state->l, &act_state->t); \
+	                         act_state->type = act_state->t.type;
+	#define SAVE_LEXER(tok)  act_state->save = tok;
+	#define RESTORE_LEXER    act_state->type = act_state->save;
+
+@}, @{
+
+	#include <stdio.h>
+
+	#include "bib.h"
+
+	typedef struct lex_state * lex_state;
+	typedef struct act_state * act_state;
+	typedef struct bib_entry * entry;
+
+	struct bib_entry *bib_parse(FILE *f);
+
+@};
+
+%terminals%
+
+	str: () -> (s :string) = @{
+		(void) lex_state; /* TODO: hack */
+
+		@s = strdup("TODO");
+		if (@s == NULL) {
+			perror("strdup");
+			exit(EXIT_FAILURE);
+		}
+	@};
+
+%actions%
+
+	<new-field>: (n :string, v :string) -> (f :field) = @{
+		assert(@n != NULL);
+		assert(@v != NULL);
+
+		@f = NULL;
+
+		if (debug & DEBUG_ACT) {
+			fprintf(stderr, "<new-field> (n = \"%s\", v = \"%s\" -> (f = %p)\n",
+				@n, @v, (void *) @f);
+		}
+	@};
+
+	<add-field>: (a :field, b :field) -> (f :field) = @{
+		assert(@a != NULL);
+		assert(@b != NULL);
+
+		@f = NULL;
+
+		if (debug & DEBUG_ACT) {
+			fprintf(stderr, "<add-field> (a = %p, b = %p) -> (f = %p)\n",
+				(void *) @a, (void *) @b, (void *) @f);
+		}
+	@};
+
+	<null-field>: () -> (f :field) = @{
+		@f = NULL;
+
+		if (debug & DEBUG_ACT) {
+			fprintf(stderr, "<null-field> () -> (f = %p)\n",
+				(void *) @f);
+		}
+	@};
+
+	<new-entry>: (n :string, v :string, f :field) -> (e :entry) = @{
+		assert(@n != NULL);
+		assert(@v != NULL);
+
+		@e = NULL;
+
+		if (debug & DEBUG_ACT) {
+			fprintf(stderr, "<new-entry>(n = \"%s\", v = \"%s\", f = %p) -> (e = %p)\n",
+				@n, @v, (void *) @f, (void *) @e);
+		}
+	@};
+
+	<add-entry>: (a :entry, b :entry) -> (f :entry) = @{
+		assert(@a != NULL);
+		assert(@b != NULL);
+
+		@f = NULL;
+
+		if (debug & DEBUG_ACT) {
+			fprintf(stderr, "<add-entry>(a = %p, b = %p) -> (f = %p)\n",
+				(void *) @a, (void *) @b, (void *) @f);
+		}
+	@};
+
+	<null-entry>: () -> (f :entry) = @{
+		@f = NULL;
+
+		if (debug & DEBUG_ACT) {
+			fprintf(stderr, "<null-entry> () -> (%p)\n",
+				(void *) @f);
+		}
+	@};
+
+%trailer% @{
+
+	struct bib_entry *bib_parse(FILE *f) {
+		struct act_state act_state_s;
+		struct act_state *act_state;
+		struct lex_state lex_state;
+		struct bib_entry *e;
+
+		assert(f != NULL);
+
+		lex_state.b = 0;
+		lex_state.f = f;
+		lex_state.p = lex_state.buf;
+
+		/* This is a workaround for ADVANCE_LEXER assuming a pointer */
+		act_state = &act_state_s;
+
+		ADVANCE_LEXER;	/* XXX: what if the first token is unrecognised? */
+		p_bib(&lex_state, act_state, &e);
+
+		return e;
+	}
+
+@}, @{
+
+@};
+
