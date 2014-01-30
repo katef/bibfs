@@ -4,6 +4,7 @@ SID_CFLAGS= -s no-numeric-terminals -s no-terminals
 OBJS += lex.o
 OBJS += main.o
 OBJS += parser.o
+OBJS += bib.o
 
 bibfs: $(OBJS)
 	$(CC) -o $@ $>
