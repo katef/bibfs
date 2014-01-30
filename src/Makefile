@@ -5,6 +5,7 @@ OBJS += lex.o
 OBJS += main.o
 OBJS += parser.o
 OBJS += bib.o
+OBJS += refactor.o
 
 OBJS += out/bibtex.o
 OBJS += out/json.o
