@@ -6,6 +6,9 @@ OBJS += main.o
 OBJS += parser.o
 OBJS += bib.o
 
+OBJS += out/bibtex.o
+OBJS += out/json.o
+
 bibfs: $(OBJS)
 	$(CC) -o $@ $>
 
@@ -16,7 +19,7 @@ parser.h: parser.act
 parser.c: parser.act
 
 .c.o:
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	rm -f $(OBJS)
