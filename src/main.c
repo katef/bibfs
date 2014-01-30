@@ -2,11 +2,13 @@
 
 #include <unistd.h>
 #include <assert.h>
+#include <string.h>
 #include <stdio.h>
 #include <errno.h>
 
 #include "debug.h"
 #include "parser.h"
+#include "out.h"
 
 unsigned debug;
 
@@ -29,16 +31,50 @@ debug_flags(const char *s)
 	return 0;
 }
 
+static void
+	(*out_lookup(const char *s))
+	(FILE *, const struct bib_entry *)
+{
+	size_t i;
+
+	struct {
+		const char *name;
+		void (*f)(FILE *, const struct bib_entry *);
+	} a[] = {
+		{ "bibtex", out_bibtex },
+		{ "json",   out_json   }
+	};
+
+	for (i = 0; i < sizeof a / sizeof *a; i++) {
+		if (0 == strcmp(a[i].name, s)) {
+			return a[i].f;
+		}
+	}
+
+	return NULL;
+}
+
 int
 main(int argc, char *argv[])
 {
+	void (*out)(FILE *, const struct bib_entry *);
+
+	out = NULL;
+
 	{
 		int c;
 
-		while (c = getopt(argc, argv, "d:"), c != -1) {
+		while (c = getopt(argc, argv, "d:e:"), c != -1) {
 			switch (c) {
 			case 'd':
 				if (-1 == debug_flags(optarg)) {
+					goto usage;
+				}
+				break;
+
+			case 'e':
+				out = out_lookup(optarg);
+				if (out == NULL) {
 					goto usage;
 				}
 				break;
@@ -65,14 +101,19 @@ main(int argc, char *argv[])
 			perror("bib_parse");
 		}
 
-		/* TODO: dump e */
+		bib_refactor(e);
+		/* TODO: convert to tree or qsort for quick lookup by key */
+
+		if (out != NULL) {
+			out(stdout, e);
+		}
 	}
 
 	return 0;
 
 usage:
 
-	fprintf(stderr, "usage: bibfs [-d ablc]\n");
+	fprintf(stderr, "usage: bibfs [-d ablc] [-e json|bibtex]\n");
 
 	return 1;
 }
