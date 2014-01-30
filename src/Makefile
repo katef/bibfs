@@ -25,3 +25,6 @@ parser.c: parser.act
 clean:
 	rm -f $(OBJS)
 
+test: bibfs
+	./bibfs -da -e json < /usr/share/texlive/texmf-dist/bibtex/bib/base/xampl.bib
+
