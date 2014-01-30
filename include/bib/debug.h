@@ -1,5 +1,5 @@
-#ifndef DEBUG_H
-#define DEBUG_H
+#ifndef BIB_DEBUG_H
+#define BIB_DEBUG_H
 
 enum {
 	DEBUG_BUF   = 1 << 0,

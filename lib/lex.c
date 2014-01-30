@@ -6,8 +6,8 @@
 #include <ctype.h>
 #include <errno.h>
 
-#include "debug.h"
-#include "lex.h"
+#include <bib/debug.h>
+#include <bib/lex.h>
 
 #define WHITE " \t\v\f\n"
 

@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "bib.h"
+#include <bib/bib.h>
 
 static void
 move_value(struct bib_value **dst, struct bib_value **src)

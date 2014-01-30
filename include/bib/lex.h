@@ -1,5 +1,5 @@
-#ifndef LEX_H
-#define LEX_H
+#ifndef BIB_LEX_H
+#define BIB_LEX_H
 
 enum lex_type {
 	tok_error  = -1,

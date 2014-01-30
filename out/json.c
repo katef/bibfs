@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "../bib.h"
-#include "../out.h"
+#include <bib/bib.h>
+#include <bib/out.h>
 
 /* TODO: escaping and whatnot */
 

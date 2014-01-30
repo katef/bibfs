@@ -25,13 +25,15 @@
 	#include <stdlib.h>
 	#include <stdio.h>
 
-	#include "debug.h"
-	#include "lex.h"
-	#include "bib.h"
-	#include "parser.h"
+	#include <bib/debug.h>
+	#include <bib/lex.h>
+	#include <bib/bib.h>
 
 	typedef char *             string;
 	typedef struct bib_field * field;
+	typedef struct bib_entry * entry;
+	typedef struct act_state * act_state;
+	typedef struct lex_state * lex_state;
 
 	struct act_state {
 		struct lex_tok t;
@@ -49,7 +51,7 @@
 
 	#include <stdio.h>
 
-	#include "bib.h"
+	struct bib_entry;
 
 	typedef struct lex_state * lex_state;
 	typedef struct act_state * act_state;

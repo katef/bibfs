@@ -24,13 +24,13 @@ struct bib_entry {
 };
 
 struct bib_value *
-bib_new_value(const char *text);
+bib_new_value(char *text);
 
 struct bib_field *
-bib_new_field(const char *name, struct bib_value *value);
+bib_new_field(char *name, struct bib_value *value);
 
 struct bib_entry *
-bib_new_entry(const char *type, const char *key, struct bib_field *field);
+bib_new_entry(char *type, char *key, struct bib_field *field);
 
 void
 bib_refactor(struct bib_entry *e);

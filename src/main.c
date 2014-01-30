@@ -6,9 +6,11 @@
 #include <stdio.h>
 #include <errno.h>
 
-#include "debug.h"
-#include "parser.h"
-#include "out.h"
+#include <bib/bib.h>
+#include <bib/debug.h>
+#include <bib/out.h>
+
+#include "../build/lib/parser.h" /* XXX: needs a formal api */
 
 unsigned debug;
 
