@@ -62,31 +62,55 @@
 %terminals%
 
 	str: () -> (s :string) = @{
-		(void) lex_state; /* TODO: hack */
+		size_t n;
 
-		@s = strdup("TODO");
+		assert(act_state->t.s != NULL);
+		assert(act_state->t.e >= act_state->t.s);
+
+		n = act_state->t.e - act_state->t.s;
+
+		@s = malloc(n + 1);
 		if (@s == NULL) {
-			perror("strdup");
-			exit(EXIT_FAILURE);
+			perror("malloc");
+			exit(EXIT_FAILURE); /* XXX: not really what i want to do */
 		}
+
+		memcpy(@s, act_state->t.s, n + 1);
+		@s[n] = '\0';
 	@};
 
 %actions%
 
 	<new-field>: (n :string, v :string) -> (f :field) = @{
+		struct bib_value *v;
+
 		assert(@n != NULL);
 		assert(@v != NULL);
 
-		@f = NULL;
+		v = bib_new_value(@v);
+		if (v == NULL) {
+			perror("bib_new_value");
+			@!;
+		}
+
+		@f = bib_new_field(@n, v);
+		if (@f == NULL) {
+			/* TODO: bib_free_value(v); */
+			perror("bib_new_field");
+			@!;
+		}
 
 		if (debug & DEBUG_ACT) {
-			fprintf(stderr, "<new-field> (n = \"%s\", v = \"%s\" -> (f = %p)\n",
-				@n, @v, (void *) @f);
+			fprintf(stderr, "<new-field> (n = \"%s\", v = \"%s\" -> (v = %p, f = %p)\n",
+				@n, @v, (void *) v, (void *) @f);
 		}
 	@};
 
 	<add-field>: (a :field, b :field) -> (f :field) = @{
-		@f = NULL;
+		assert(@a->next == NULL);
+
+		@a->next = @b;
+		@f = @a;
 
 		if (debug & DEBUG_ACT) {
 			fprintf(stderr, "<add-field> (a = %p, b = %p) -> (f = %p)\n",
@@ -103,33 +127,40 @@
 		}
 	@};
 
-	<new-entry>: (n :string, v :string, f :field) -> (e :entry) = @{
-		assert(@n != NULL);
-		assert(@v != NULL);
+	<new-entry>: (t :string, k :string, f :field) -> (e :entry) = @{
+		assert(@t != NULL);
+		assert(@k != NULL);
 
+		@e = bib_new_entry(@t, @k, @f);
+		if (@e == NULL) {
+			perror("bib_new_entry");
+			@!;
+		}
+
+		if (debug & DEBUG_ACT) {
+			fprintf(stderr, "<new-entry>(t = \"%s\", k = \"%s\", f = %p) -> (e = %p)\n",
+				@t, @k, (void *) @f, (void *) @e);
+		}
+	@};
+
+	<add-entry>: (a :entry, b :entry) -> (e :entry) = @{
+		assert(@a->next == NULL);
+
+		@a->next = @b;
+		@e = @a;
+
+		if (debug & DEBUG_ACT) {
+			fprintf(stderr, "<add-entry>(a = %p, b = %p) -> (e = %p)\n",
+				(void *) @a, (void *) @b, (void *) @e);
+		}
+	@};
+
+	<null-entry>: () -> (e :entry) = @{
 		@e = NULL;
 
 		if (debug & DEBUG_ACT) {
-			fprintf(stderr, "<new-entry>(n = \"%s\", v = \"%s\", f = %p) -> (e = %p)\n",
-				@n, @v, (void *) @f, (void *) @e);
-		}
-	@};
-
-	<add-entry>: (a :entry, b :entry) -> (f :entry) = @{
-		@f = NULL;
-
-		if (debug & DEBUG_ACT) {
-			fprintf(stderr, "<add-entry>(a = %p, b = %p) -> (f = %p)\n",
-				(void *) @a, (void *) @b, (void *) @f);
-		}
-	@};
-
-	<null-entry>: () -> (f :entry) = @{
-		@f = NULL;
-
-		if (debug & DEBUG_ACT) {
 			fprintf(stderr, "<null-entry> () -> (%p)\n",
-				(void *) @f);
+				(void *) @e);
 		}
 	@};
 
