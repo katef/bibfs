@@ -104,7 +104,7 @@ zone_main(struct lex_state *l, const char **p, const char **s, const char **e)
 		(*p)++;
 		*s = *p;
 		*p += strcspn(*p, "\"");
-		*e = *(p - 1);
+		*e = *p - 1;
 		(*p) += **p == '\"';
 		return tok_str;
 
