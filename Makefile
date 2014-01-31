@@ -1,6 +1,7 @@
 .MAKEFLAGS: -m mk
 
-all:: mkdir .WAIT prog
+all::  mkdir .WAIT prog
+test:: mkdir .WAIT prog
 
 BUILD ?= build
 

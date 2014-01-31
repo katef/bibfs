@@ -1,13 +1,16 @@
 
+REMOVE ?= rm -f
+RMDIR  ?= rm -r
+
 clean::
 .for dir in ${CLEAN:H:O:u}
-	rm -f ${CLEAN:M${dir}/*}
+	${REMOVE} ${CLEAN:M${dir}/*}
 .endfor
 
 clean::
 .for dir in ${DIR:O:u} ${BUILD}
-. if exists(${dir})
-	rm -r ${dir}
-. endif
+.if exists(${dir})
+	${RMDIR} ${dir}
+.endif
 .endfor
 

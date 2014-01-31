@@ -14,3 +14,8 @@ ${BUILD}/${parser:R}.h: ${parser} ${parser:R}.act
 ${BUILD}/${parser:R}.c: ${parser} ${parser:R}.act
 .endfor
 
+.for parser in ${PARSER}
+test::
+	${SID} -l test ${parser}
+.endfor
+
