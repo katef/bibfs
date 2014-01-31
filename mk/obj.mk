@@ -18,11 +18,11 @@ DIR += ${BUILD}/${src:H}
 .endfor
 
 .for src in ${SRC}
-${BUILD}/${src:R}.o: ${@:H} ${src}
+${BUILD}/${src:R}.o: ${src}
 .endfor
 
 .for src in ${GEN}
-${BUILD}/${src:R}.o: ${@:H} ${BUILD}/${src}
+${BUILD}/${src:R}.o: ${BUILD}/${src}
 .endfor
 
 .for src in ${SRC} ${GEN}

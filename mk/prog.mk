@@ -1,10 +1,10 @@
 
 .for prog in ${PROG}
-all:: ${BUILD}/bin/${prog}
+prog:: ${BUILD}/bin/${prog}
 .endfor
 
 .for prog in ${PROG}
-${BUILD}/bin/${prog}: ${@:H}
+${BUILD}/bin/${prog}:
 	${CC} -o $@ ${CFLAGS} ${.ALLSRC:M*.o}
 .endfor
 

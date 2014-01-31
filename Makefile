@@ -1,6 +1,6 @@
 .MAKEFLAGS: -m mk
 
-all::
+all:: mkdir .WAIT prog
 
 BUILD ?= build
 
@@ -31,7 +31,7 @@ test:: ${BUILD}/bin/bibfs ${TEST}
 .include <mk/obj.mk>
 .include <mk/sid.mk>
 .include <mk/prog.mk>
-.include <mk/dir.mk>
+.include <mk/mkdir.mk>
 .include <mk/clean.mk>
 
 src/main.c: build/lib/parser.h
