@@ -1,9 +1,7 @@
 
 clean::
-.for clean in ${CLEAN}
-. if exists(${clean})
-	rm ${clean}
-. endif
+.for dir in ${CLEAN:H:O:u}
+	rm -f ${CLEAN:M${dir}/*}
 .endfor
 
 clean::
