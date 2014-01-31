@@ -1,10 +1,9 @@
 
 MKDIR ?= mkdir
 
-# XXX: no :O:u for openbsd make
-mkdir:: ${BUILD} ${DIR:O:u}
+mkdir:: ${DIR}
 
-.for dir in ${BUILD} ${DIR:O:u}
+.for dir in ${DIR}
 ${dir}:
 	${MKDIR} -p ${dir}
 .endfor

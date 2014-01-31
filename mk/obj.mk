@@ -11,7 +11,6 @@ CFLAGS += -O2
 
 .for src in ${SRC} ${GEN}
 CLEAN += ${BUILD}/${src:R}.o
-DIR   += ${BUILD}/${src:H}
 .endfor
 
 .for src in ${SRC}
