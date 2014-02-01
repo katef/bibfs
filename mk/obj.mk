@@ -9,7 +9,7 @@ CFLAGS += -ansi -pedantic
 CFLAGS += -O2
 .endif
 
-.for src in ${SRC} ${GEN}
+.for src in ${SRC} ${GEN} ${SRC}
 CLEAN += ${BUILD}/${src:R}.o
 .endfor
 
@@ -23,6 +23,6 @@ ${BUILD}/${src:R}.o: ${BUILD}/${src}
 
 .for src in ${SRC} ${GEN}
 ${BUILD}/${src:R}.o:
-	${CC} -o $@ ${CFLAGS} -c ${.ALLSRC:M*.c}
+	${CC} -o $@ ${CFLAGS} ${CFLAGS_${src}} -c ${.ALLSRC:M*.c}
 .endfor
 

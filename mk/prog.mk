@@ -1,4 +1,6 @@
 
+LFLAGS ?=
+
 DIR += ${BUILD}/bin
 
 .for prog in ${PROG}
@@ -8,6 +10,6 @@ CLEAN += ${BUILD}/bin/${prog}
 
 .for prog in ${PROG}
 ${BUILD}/bin/${prog}:
-	${CC} -o $@ ${CFLAGS} ${.ALLSRC:M*.o}
+	${CC} -o $@ ${LFLAGS} ${.ALLSRC:M*.o} ${LFLAGS_${prog}}
 .endfor
 
