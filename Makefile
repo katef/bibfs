@@ -10,7 +10,7 @@ BUILD ?= build
 
 SUBDIR += lib
 SUBDIR += out
-SUBDIR += src
+SUBDIR += bibt
 
 TEST += /usr/share/texlive/texmf-dist/bibtex/bib/base/xampl.bib
 
