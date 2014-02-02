@@ -7,10 +7,10 @@ size_t
 bib_count(const struct bib_entry *e);
 
 struct bib_entry *
-find_entry(struct bib_entry *e, const char *path, size_t n);
+find_entry(struct bib_entry *e, const char *path);
 
 struct bib_field *
-find_field(struct bib_field *f, const char *name, size_t n);
+find_field(struct bib_field *f, const char *name);
 
 #endif
 

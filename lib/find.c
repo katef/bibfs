@@ -18,40 +18,28 @@ bib_count(const struct bib_entry *e)
 }
 
 struct bib_entry *
-find_entry(struct bib_entry *e, const char *path, size_t n)
+find_entry(struct bib_entry *e, const char *path)
 {
 	assert(path != NULL);
 
 	for ( ; e != NULL; e = e->next) {
-		if (n != strlen(e->key)) {
-			continue;
+		if (0 == strcmp(path, e->key)) {
+			return e;
 		}
-
-		if (0 != memcmp(path, e->key, n)) {
-			continue;
-		}
-
-		return e;
 	}
 
 	return NULL;
 }
 
 struct bib_field *
-find_field(struct bib_field *f, const char *name, size_t n)
+find_field(struct bib_field *f, const char *name)
 {
 	assert(name != NULL);
 
 	for ( ; f != NULL; f = f->next) {
-		if (n != strlen(f->name)) {
-			continue;
+		if (0 == strcmp(name, f->name)) {
+			return f;
 		}
-
-		if (0 != memcmp(name, f->name, n)) {
-			continue;
-		}
-
-		return f;
 	}
 
 	return NULL;
