@@ -1,4 +1,4 @@
-#define _POSIX_C_SOURCE 200809L
+#define _XOPEN_SOURCE 500
 #define FUSE_USE_VERSION 26
 
 #include <fuse.h>
@@ -12,8 +12,8 @@
 
 #include "../build/lib/parser.h" /* XXX: needs a formal api */
 
-#include "op.h"
 #include "internal.h"
+#include "op.h"
 
 unsigned debug;
 
@@ -99,6 +99,7 @@ main(int argc, char *argv[])
 
 /* XXX: are argc and argv correct? */
 /* XXX: no, because argv[0] is supposed to be the filename */
+/* TODO: use the "--" as argv[0] instead */
 
 		return fuse_main(argc, argv, &op, &b);
 	}

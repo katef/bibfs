@@ -1,4 +1,4 @@
-#define _POSIX_C_SOURCE 200809L
+#define _XOPEN_SOURCE 500
 #define FUSE_USE_VERSION 26
 
 #include <sys/types.h>
@@ -10,99 +10,73 @@
 #include <fcntl.h>
 
 #include <assert.h>
-#include <stdio.h>
 #include <string.h>
+#include <limits.h>
+#include <stdio.h>
 #include <errno.h>
 
-#include <bib/bib.h>
-#include <bib/find.h>
-
 #include "internal.h"
+#include "op.h"
+
+static size_t
+tokparts(char *s, const char *a[], size_t count)
+{
+	size_t n;
+
+	assert(s != NULL);
+	assert(a != NULL);
+
+	n = 0;
+
+	for (;;) {
+		if (n < count) {
+			a[n] = s;
+		}
+
+		s += strcspn(s, "/");
+		if (*s == '\0') {
+			break;
+		}
+
+		*s = '\0';
+		s++;
+		n++;
+	}
+
+	return n;
+}
 
 static int
 bibfs_getattr(const char *path, struct stat *st)
 {
 	struct bibfs_state *b = fuse_get_context()->private_data;
 	static const struct stat st_default;
-	const struct bib_entry *e;
 
-	assert(path != NULL);
-	assert(st != NULL);
+	char s[PATH_MAX];
+	const char *a[3];
+
 	assert(b != NULL);
 	assert(b->f != NULL); /* XXX: open if neccessary */
+	assert(path != NULL);
+	assert(path[0] == '/');
+	assert(st != NULL);
+
+	if (strlen(path) > sizeof s) {
+		return -ENAMETOOLONG;
+	}
+
+	strcpy(s, path);
 
 	*st = st_default;
 
-	if (0 == strcmp(path, "/")) {
-		st->st_mode  = S_IFDIR | 0755;
-		st->st_nlink = bib_count(b->e) + 1;
+	switch (tokparts(s, a, sizeof a / sizeof *a)) {
+	case 1: return op_getattr_root (b, st);
+	case 2: return op_getattr_entry(b, st, a[1]);
+	case 3: return op_getattr_field(b, st, a[1], a[2]);
 
-		/* TODO: time etc from b->st */
-
-		return 0;
-	}
-
-	if (path[0] != '/') {
+	default:
 		return -ENOENT;
 	}
-
-	path += strspn(path, "/");
-
-	e = find_entry(b->e, path, strcspn(path, "/"));
-	if (e == NULL) {
-		return -ENOENT;
-	}
-
-	path += strcspn(path, "/");
-	path += strspn (path, "/");
-
-	/* "/key" */
-	if (path[0] == '\0') {
-		st->st_mode  = S_IFDIR | 0755;
-		st->st_nlink = 57; /* TODO */
-
-		return 0;
-	}
-
-	/* "/key/abstract.txt" */
-	{
-		size_t i;
-
-		/* TODO: share with file contents. add a callback to concat values */
-		struct {
-			const char *path;
-			const char *field;
-		} a[] = {
-			{ "abstract.txt", "abstract" },
-			{ "notes.txt",    "notes"    }
-		};
-
-		for (i = 0; i < sizeof a / sizeof *a; i++) {
-			const struct bib_field *f;
-
-			if (0 != strcmp(path, a[i].path)) {
-				continue;
-			}
-
-			f = find_field(e->field, a[i].field, strlen(a[i].field));
-			if (f == NULL) {
-				return -ENOENT;
-			}
-
-			if (f->value == NULL || f->value->next != NULL) {
-				return -EBADFD;
-			}
-
-			/* TODO: etc */
-			st->st_mode  = S_IFREG | 0444;
-			st->st_nlink = 1;
-			st->st_size  = strlen(f->value->text); /* XXX: strlen() of all f->value comma seperated */
-
-			return 0;
-		}
-	}
-
-	return -ENOENT;
 }
 
 static int
@@ -111,27 +85,32 @@ bibfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
 {
 	struct bibfs_state *b = fuse_get_context()->private_data;
 
+	char s[PATH_MAX];
+	const char *a[2];
+
+	assert(b != NULL);
+	assert(b->f != NULL); /* XXX: open if neccessary */
 	assert(path != NULL);
+	assert(path[0] == '/');
 	assert(buf != NULL);
 	assert(fi != NULL);
 
-	(void) offset;
-	(void) fi;
-
-	if (0 == strcmp(path, "/")) {
-		const struct bib_entry *e;
-
-		fill(buf, ".",  NULL, 0);
-		fill(buf, "..", NULL, 0);
-
-		for (e = b->e; e != NULL; e = e->next) {
-			fill(buf, e->key, NULL, 0);
-		}
-
-		return 0;
+	if (strlen(path) > sizeof s) {
+		return -ENAMETOOLONG;
 	}
 
-	return -ENOENT;
+	strcpy(s, path);
+
+	fill(buf, ".",  NULL, 0);
+	fill(buf, "..", NULL, 0);
+
+	switch (tokparts(s, a, sizeof a / sizeof *a)) {
+	case 0: return op_readdir_root (b, buf, fill, offset, fi);
+	case 1: return op_readdir_entry(b, buf, fill, offset, fi, a[1]);
+
+	default:
+		return -ENOENT;
+	}
 }
 
 void
