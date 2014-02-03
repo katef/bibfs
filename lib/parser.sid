@@ -21,6 +21,8 @@
 
 %productions%
 
+	<free>: (:string) -> ();
+
 	<new-field>: (:string, :string) -> (:field);
 	<add-field>: (:field, :field) -> (:field);
 	<null-field>: () -> (:field);
@@ -37,6 +39,9 @@
 			v = str; /* value */
 
 			f = <new-field>(n, v);
+
+			<free>(n);
+			<free>(v);
 		};
 
 	] = {
@@ -66,6 +71,9 @@
 			cbrace;
 
 			e = <new-entry>(t, k, f);
+
+			/* t is owned by the entry */
+			<free>(k);
 
 		/* ## TODO: panic until next @. log paniced-over bytes somewhere */
 		};

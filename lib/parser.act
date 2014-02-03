@@ -83,6 +83,12 @@
 
 %actions%
 
+	<free>: (s :string) -> () = @{
+		assert(@s != NULL);
+
+		free(@s);
+	@};
+
 	<new-field>: (n :string, v :string) -> (f :field) = @{
 		struct bib_value *v;
 

@@ -9,6 +9,7 @@ SRC += lib/find.c
 SRC += lib/split.c
 SRC += lib/merge.c
 SRC += lib/cull.c
+SRC += lib/free.c
 
 PARSER += lib/parser.sid
 

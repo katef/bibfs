@@ -10,6 +10,7 @@
 #include <bib/bib.h>
 #include <bib/debug.h>
 #include <bib/out.h>
+#include <bib/free.h>
 
 #include "../build/lib/parser.h" /* XXX: needs a formal api */
 
@@ -115,6 +116,8 @@ main(int argc, char *argv[])
 		if (out != NULL) {
 			out(stdout, e);
 		}
+
+		bib_free_entry(e);
 	}
 
 	return 0;
