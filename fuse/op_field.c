@@ -86,6 +86,14 @@ op_getattr_field(struct bibfs_state *b, struct stat *st,
 		}
 	}
 
+	if (0 == strcmp(name, "index.bib")) {
+		st->st_mode  = S_IFREG | 0444;
+		st->st_nlink = 1;
+		st->st_size  = 57; /* TODO: size of formatted entry */
+
+		return 0;
+	}
+
 	/* TODO: time etc from b->st otherwise*/
 
 	return -ENOENT;
