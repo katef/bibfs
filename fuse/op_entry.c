@@ -79,7 +79,9 @@ op_readdir_entry(struct bibfs_state *b,
 			continue;
 		}
 
-		fill(buf, a[i].path, NULL, 0);
+		if (1 == fill(buf, a[i].path, NULL, 0)) {
+			return -ENOBUFS;
+		}
 	}
 
 	{
@@ -89,12 +91,16 @@ op_readdir_entry(struct bibfs_state *b,
 		f = find_field(e->field, "file");
 		if (f != NULL) {
 			for (v = f->value; v != NULL; v = v->next) {
-				fill(buf, filename(v->text), NULL, 0);
+				if (1 == fill(buf, filename(v->text), NULL, 0)) {
+					return -ENOBUFS;
+				}
 			}
 		}
 	}
 
-	/* TODO: index.bib etc */
+	if (1 == fill(buf, "index.bib", NULL, 0)) {
+		return -ENOBUFS;
+	}
 
 	return 0;
 }
