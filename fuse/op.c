@@ -70,9 +70,9 @@ bibfs_getattr(const char *path, struct stat *st)
 	*st = st_default;
 
 	switch (tokparts(s, a, sizeof a / sizeof *a)) {
-	case 1: return op_getattr_root (b, st);
-	case 2: return op_getattr_entry(b, st, a[1]);
-	case 3: return op_getattr_field(b, st, a[1], a[2]);
+	case 0: return op_getattr_root (b, st);
+	case 1: return op_getattr_entry(b, st, a[1]);
+	case 2: return op_getattr_field(b, st, a[1], a[2]);
 
 	default:
 		return -ENOENT;
