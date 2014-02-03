@@ -8,6 +8,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 #include <errno.h>
 
 #include <bib/bib.h>
@@ -15,6 +16,21 @@
 
 #include "internal.h"
 #include "op.h"
+
+static const char *
+filename(const char *path)
+{
+	const char *p;
+
+	assert(path != NULL);
+
+	p = strrchr(path, '/');
+	if (p == NULL) {
+		return path;
+	}
+
+	return p + 1;
+}
 
 int
 op_getattr_entry(struct bibfs_state *b, struct stat *st,
@@ -88,7 +104,7 @@ op_readdir_entry(struct bibfs_state *b,
 		f = find_field(e->field, "file");
 		if (f != NULL) {
 			for (v = f->value; v != NULL; v = v->next) {
-				fill(buf, v->text, NULL, 0);
+				fill(buf, filename(v->text), NULL, 0);
 			}
 		}
 	}
