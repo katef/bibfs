@@ -66,7 +66,26 @@ op_getattr_field(struct bibfs_state *b, struct stat *st,
 		return 0;
 	}
 
-	/* TODO: generate a symlink for each PDF */
+	f = find_field(e->field, "file");
+	if (f != NULL) {
+		struct bib_value *v;
+		const char *n;
+
+		for (v = f->value; v != NULL; v = v->next) {
+			n = filename(v->text);
+
+			if (0 != strcmp(name, n)) {
+				continue;
+			}
+
+			st->st_mode  = S_IFLNK | 0444;
+			st->st_nlink = 1;
+			st->st_size  = strlen(n); /* XXX: size of destination? */
+
+			return 0;
+		}
+	}
+
 	/* TODO: time etc from b->st otherwise*/
 
 	return -ENOENT;
