@@ -131,8 +131,13 @@ bibfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
 
 	strcpy(s, path);
 
-	fill(buf, ".",  NULL, 0);
-	fill(buf, "..", NULL, 0);
+	if (1 == fill(buf, ".",  NULL, 0)) {
+		return -ENOBUFS;
+	}
+
+	if (1 == fill(buf, "..", NULL, 0)) {
+		return -ENOBUFS;
+	}
 
 	switch (tokparts(s, a, sizeof a / sizeof *a)) {
 	case 0: return op_readdir_root (b, buf, fill, offset, fi);
