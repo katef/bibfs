@@ -3,13 +3,16 @@
 
 struct bibfs_state {
 	const char *path;
-	/* TODO: store stat struct, for mtime */
+	struct stat st;
 	FILE *f;
 	struct bib_entry *e;
 };
 
 const char *
 filename(const char *path);
+
+int
+bibfs_reload(struct bibfs_state *b);
 
 #endif
 

@@ -56,10 +56,13 @@ bibfs_getattr(const char *path, struct stat *st)
 	const char *a[3];
 
 	assert(b != NULL);
-	assert(b->f != NULL); /* XXX: open if neccessary */
 	assert(path != NULL);
 	assert(path[0] == '/');
 	assert(st != NULL);
+
+	if (-1 == bibfs_reload(b)) {
+		return -errno;
+	}
 
 	if (strlen(path) > sizeof s) {
 		return -ENAMETOOLONG;
@@ -88,10 +91,13 @@ bibfs_readlink(const char *path, char *buf, size_t bufsz)
 	const char *a[3];
 
 	assert(b != NULL);
-	assert(b->f != NULL); /* XXX: open if neccessary */
 	assert(path != NULL);
 	assert(path[0] == '/');
 	assert(buf != NULL);
+
+	if (-1 == bibfs_reload(b)) {
+		return -errno;
+	}
 
 	if (strlen(path) + 1 > sizeof s) {
 		return -ENAMETOOLONG;
@@ -119,11 +125,14 @@ bibfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
 	const char *a[2];
 
 	assert(b != NULL);
-	assert(b->f != NULL); /* XXX: open if neccessary */
 	assert(path != NULL);
 	assert(path[0] == '/');
 	assert(buf != NULL);
 	assert(fi != NULL);
+
+	if (-1 == bibfs_reload(b)) {
+		return -errno;
+	}
 
 	if (strlen(path) > sizeof s) {
 		return -ENAMETOOLONG;

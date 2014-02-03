@@ -7,10 +7,7 @@
 #include <stdio.h>
 #include <errno.h>
 
-#include <bib/bib.h>
 #include <bib/debug.h>
-
-#include "../build/lib/parser.h" /* XXX: needs a formal api */
 
 #include "internal.h"
 #include "op.h"
@@ -59,11 +56,6 @@ main(int argc, char *argv[])
 
 			case 'f':
 				b.path = optarg;
-				b.f = fopen(b.path, "r");
-				if (b.f == NULL) {
-					perror(b.path);
-					return 1;
-				}
 				break;
 
 			default:
@@ -75,25 +67,8 @@ main(int argc, char *argv[])
 		argv += optind;
 	}
 
-	if (b.f == NULL) {
+	if (b.path == NULL) {
 		goto usage;
-	}
-
-	/* TODO: move into bibfs_reload() or somesuch */
-	{
-		errno = 0;
-		b.e =  bib_parse(b.f);
-		if (b.e == NULL && errno != 0) {
-			perror("bib_parse");
-			/* TODO: note we continue anyway; eventually this might become readable */
-		}
-
-		if (-1 == bib_refactor(b.e)) {
-			perror("bib_refactor");
-			return 1;
-		}
-
-		/* TODO: convert to tree or qsort for quick lookup by key */
 	}
 
 	{
