@@ -8,5 +8,8 @@ struct bibfs_state {
 	struct bib_entry *e;
 };
 
+const char *
+filename(const char *path);
+
 #endif
 

@@ -17,21 +17,6 @@
 #include "internal.h"
 #include "op.h"
 
-static const char *
-filename(const char *path)
-{
-	const char *p;
-
-	assert(path != NULL);
-
-	p = strrchr(path, '/');
-	if (p == NULL) {
-		return path;
-	}
-
-	return p + 1;
-}
-
 int
 op_getattr_entry(struct bibfs_state *b, struct stat *st,
 	const char *key)
