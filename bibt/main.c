@@ -96,7 +96,8 @@ main(int argc, char *argv[])
 	}
 
 	{
-		struct bib_entry *e;
+		struct bib_entry *e, *p;
+		struct bib_field *f;
 
 		errno = 0;
 		e =  bib_parse(stdin);
@@ -104,7 +105,11 @@ main(int argc, char *argv[])
 			perror("bib_parse");
 		}
 
-		bib_refactor(e);
+		if (-1 == bib_refactor(e)) {
+			perror("bib_refactor");
+			return 1;
+		}
+
 		/* TODO: convert to tree or qsort for quick lookup by key */
 
 		if (out != NULL) {

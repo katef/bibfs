@@ -88,7 +88,11 @@ main(int argc, char *argv[])
 			/* TODO: note we continue anyway; eventually this might become readable */
 		}
 
-		bib_refactor(b.e);
+		if (-1 == bib_refactor(b.e)) {
+			perror("bib_refactor");
+			return 1;
+		}
+
 		/* TODO: convert to tree or qsort for quick lookup by key */
 	}
 

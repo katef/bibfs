@@ -32,7 +32,7 @@ bib_new_field(char *name, struct bib_value *value);
 struct bib_entry *
 bib_new_entry(char *type, char *key, struct bib_field *field);
 
-void
+int
 bib_refactor(struct bib_entry *e);
 
 #endif
