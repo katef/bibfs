@@ -9,7 +9,7 @@ SRC += fuse/op_field.c
 
 PROG += bibfs
 
-.for src in ${SRC:Mfuse/*.c}
+.for src in ${SRC:Mfuse/main.c} ${SRC:Mfuse/op*.c}
 CFLAGS_${src} ?= `pkg-config fuse --cflags`
 .endfor
 
