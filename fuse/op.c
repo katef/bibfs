@@ -80,6 +80,36 @@ bibfs_getattr(const char *path, struct stat *st)
 }
 
 static int
+bibfs_readlink(const char *path, char *buf, size_t bufsz)
+{
+	struct bibfs_state *b = fuse_get_context()->private_data;
+
+	char s[PATH_MAX];
+	const char *a[3];
+
+	assert(b != NULL);
+	assert(b->f != NULL); /* XXX: open if neccessary */
+	assert(path != NULL);
+	assert(path[0] == '/');
+	assert(buf != NULL);
+
+	if (strlen(path) + 1 > sizeof s) {
+		return -ENAMETOOLONG;
+	}
+
+	strcpy(s, path);
+
+	switch (tokparts(s, a, sizeof a / sizeof *a)) {
+	case 0: return -EINVAL;
+	case 1: return -EINVAL;
+	case 2: return op_readlink_field(b, buf, bufsz, a[1], a[2]);
+
+	default:
+		return -ENOENT;
+	}
+}
+
+static int
 bibfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
 	off_t offset, struct fuse_file_info *fi)
 {
@@ -118,7 +148,8 @@ bibfs_init(struct fuse_operations *op)
 {
 	assert(op != NULL);
 
-	op->getattr = bibfs_getattr;
-	op->readdir = bibfs_readdir;
+	op->getattr  = bibfs_getattr;
+	op->readlink = bibfs_readlink;
+	op->readdir  = bibfs_readdir;
 }
 

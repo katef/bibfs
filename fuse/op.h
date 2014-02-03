@@ -27,5 +27,9 @@ op_readdir_entry(struct bibfs_state *b,
 	void *buf, fuse_fill_dir_t fill, off_t offset, struct fuse_file_info *fi,
 	const char *key);
 
+int
+op_readlink_field(struct bibfs_state *b, char *buf, size_t bufsz,
+	const char *key, const char *name);
+
 #endif
 

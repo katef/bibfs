@@ -91,3 +91,43 @@ op_getattr_field(struct bibfs_state *b, struct stat *st,
 	return -ENOENT;
 }
 
+int
+op_readlink_field(struct bibfs_state *b, char *buf, size_t bufsz,
+	const char *key, const char *name)
+{
+	struct bib_entry *e;
+	struct bib_field *f;
+	struct bib_value *v;
+
+	assert(b != NULL);
+	assert(buf != NULL);
+	assert(key != NULL);
+	assert(name != NULL);
+
+	e = find_entry(b->e, key);
+	if (e == NULL) {
+		return -ENOENT;
+	}
+
+	f = find_field(e->field, "file");
+	if (f == NULL) {
+		return -ENOENT;
+	}
+
+	for (v = f->value; v != NULL; v = v->next) {
+		if (0 != strcmp(name, filename(v->text))) {
+			continue;
+		}
+
+		if (strlen(v->text) + 1 > bufsz) {
+			return -ENAMETOOLONG;
+		}
+
+		strcpy(buf, v->text);
+
+		return 0;
+	}
+
+	return -ENOENT;
+}
+
