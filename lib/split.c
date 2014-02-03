@@ -1,5 +1,3 @@
-#define _XOPEN_SOURCE 500
-
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
@@ -31,14 +29,7 @@ bib_split(struct bib_field *f, const char *delim)
 
 		*s = '\0';
 
-		/* XXX: if bib_new_value() appended to the end of the struct,
-		 *I wouldn't need to do this here */
-		s = strdup(s + 1);
-		if (s == NULL) {
-			return -1;
-		}
-
-		w = bib_new_value(s);
+		w = bib_new_value(s + 1);
 		if (w == NULL) {
 			return -1;
 		}

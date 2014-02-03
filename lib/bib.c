@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <string.h>
 #include <stdlib.h>
 
 #include <bib/bib.h>
@@ -8,12 +9,12 @@ bib_new_value(char *text)
 {
 	struct bib_value *v;
 
-	v = malloc(sizeof *v);
+	v = malloc(sizeof *v + strlen(text) + 1);
 	if (v == NULL) {
 		return NULL;
 	}
 
-	v->text = text;
+	v->text = strcpy((char *) v + sizeof *v, text);
 	v->next = NULL;
 
 	return v;
@@ -26,12 +27,12 @@ bib_new_field(char *name, struct bib_value *value)
 
 	assert(name != NULL);
 
-	f = malloc(sizeof *f);
+	f = malloc(sizeof *f + strlen(name) + 1);
 	if (f == NULL) {
 		return NULL;
 	}
 
-	f->name  = name;
+	f->name  = strcpy((char *) f + sizeof *f, name);
 	f->value = value;
 	f->next  = NULL;
 
@@ -46,13 +47,13 @@ bib_new_entry(char *type, char *key, struct bib_field *field)
 	assert(type != NULL);
 	assert(key != NULL);
 
-	e = malloc(sizeof *e);
+	e = malloc(sizeof *e + strlen(key) + 1);
 	if (e == NULL) {
 		return NULL;
 	}
 
 	e->type  = type;
-	e->key   = key;
+	e->key   = strcpy((char *) e + sizeof *e, key);
 	e->field = field;
 	e->next  = NULL;
 
