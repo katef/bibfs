@@ -46,6 +46,7 @@ op_readdir_entry(struct bibfs_state *b,
 	const char *key)
 {
 	const struct bib_entry *e;
+	const struct bib_field *f;
 	size_t i;
 
 	/* TODO: share with file contents. add a callback to concat values */
@@ -72,8 +73,6 @@ op_readdir_entry(struct bibfs_state *b,
 	}
 
 	for (i = 0; i < sizeof a / sizeof *a; i++) {
-		struct bib_field *f;
-
 		f = find_field(e->field, a[i].name);
 		if (f == NULL) {
 			continue;
@@ -84,16 +83,13 @@ op_readdir_entry(struct bibfs_state *b,
 		}
 	}
 
-	{
-		struct bib_field *f;
+	f = find_field(e->field, "file");
+	if (f != NULL) {
 		struct bib_value *v;
 
-		f = find_field(e->field, "file");
-		if (f != NULL) {
-			for (v = f->value; v != NULL; v = v->next) {
-				if (1 == fill(buf, filename(v->text), NULL, 0)) {
-					return -ENOBUFS;
-				}
+		for (v = f->value; v != NULL; v = v->next) {
+			if (1 == fill(buf, filename(v->text), NULL, 0)) {
+				return -ENOBUFS;
 			}
 		}
 	}
