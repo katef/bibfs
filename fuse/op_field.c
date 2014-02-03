@@ -58,7 +58,6 @@ op_getattr_field(struct bibfs_state *b, struct stat *st,
 			return -EBADFD;
 		}
 
-		/* TODO: etc */
 		st->st_mode  = S_IFREG | 0444;
 		st->st_nlink = 1;
 		st->st_size  = strlen(f->value->text); /* XXX: strlen() of all f->value comma seperated */
@@ -78,9 +77,15 @@ op_getattr_field(struct bibfs_state *b, struct stat *st,
 				continue;
 			}
 
+			st->st_size  = 0;
+
+			/* TODO: consider relative paths */
+			if (v->text[0] == '/') {
+				(void) stat(v->text, st);
+			}
+
 			st->st_mode  = S_IFLNK | 0444;
 			st->st_nlink = 1;
-			st->st_size  = strlen(n); /* XXX: size of destination? */
 
 			return 0;
 		}
@@ -93,8 +98,6 @@ op_getattr_field(struct bibfs_state *b, struct stat *st,
 
 		return 0;
 	}
-
-	/* TODO: time etc from b->st otherwise*/
 
 	return -ENOENT;
 }

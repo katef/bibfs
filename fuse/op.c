@@ -50,7 +50,6 @@ static int
 bibfs_getattr(const char *path, struct stat *st)
 {
 	struct bibfs_state *b = fuse_get_context()->private_data;
-	static const struct stat st_default;
 
 	char s[PATH_MAX];
 	const char *a[3];
@@ -70,7 +69,7 @@ bibfs_getattr(const char *path, struct stat *st)
 
 	strcpy(s, path);
 
-	*st = st_default;
+	*st = b->st;
 
 	switch (tokparts(s, a, sizeof a / sizeof *a)) {
 	case 0: return op_getattr_root (b, st);

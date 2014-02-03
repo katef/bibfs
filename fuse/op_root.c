@@ -24,8 +24,6 @@ op_getattr_root(struct bibfs_state *b, struct stat *st)
 	st->st_mode  = S_IFDIR | 0755;
 	st->st_nlink = bib_count(b->e) + 2;
 
-	/* TODO: time etc from b->st */
-
 	return 0;
 }
 

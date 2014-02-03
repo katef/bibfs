@@ -35,8 +35,6 @@ op_getattr_entry(struct bibfs_state *b, struct stat *st,
 	st->st_mode  = S_IFDIR | 0755;
 	st->st_nlink = 57; /* TODO */
 
-	/* TODO: time etc from b->st */
-
 	return 0;
 }
 
