@@ -2,6 +2,9 @@
 #define BIB_REFACTOR_H
 
 int
+bib_refactor(struct bib_entry *e);
+
+int
 bib_split(struct bib_field *f, const char *delim);
 
 void
