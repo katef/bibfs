@@ -19,6 +19,14 @@
 #include "internal.h"
 #include "op.h"
 
+/* TODO: name= from .bib source file */
+const char *zim_notebook =
+	"[Notebook]\n"
+	"name=Something\n"
+	"version=0.4\n"
+	"endofline=unix\n"
+	"profile=None\n";
+
 static size_t
 split(char *s, size_t count, ...)
 {
@@ -64,13 +72,21 @@ bibfs_getattr(const char *path, struct stat *st)
 		return -errno;
 	}
 
+	*st = b->st;
+
+	if (b->zim && 0 == strcmp(path, "/notebook.zim")) {
+		st->st_mode  = S_IFREG | 0444;
+		st->st_nlink = 1;
+		st->st_size  = strlen(zim_notebook);
+
+		return 0;
+	}
+
 	if (strlen(path) > sizeof s) {
 		return -ENAMETOOLONG;
 	}
 
 	strcpy(s, path);
-
-	*st = b->st;
 
 	switch (split(s, 2, &key, &name)) {
 	case 0: return op_getattr_root (b, st);
@@ -174,6 +190,14 @@ bibfs_open(const char *path, struct fuse_file_info *fi)
 		return -errno;
 	}
 
+	if (b->zim && 0 == strcmp(path, "/notebook.zim")) {
+		if ((fi->flags & 03) != O_RDONLY) {
+			return -EACCES;
+		}
+
+		return 0;
+	}
+
 	if (strlen(path) + 1 > sizeof s) {
 		return -ENAMETOOLONG;
 	}
@@ -208,6 +232,24 @@ bibfs_read(const char *path, char *buf, size_t size, off_t offset,
 
 	if (-1 == bibfs_reload(b)) {
 		return -errno;
+	}
+
+	if (b->zim && 0 == strcmp(path, "/notebook.zim")) {
+		size_t l;
+		int n;
+
+		l = strlen(zim_notebook);
+		if (offset >= l) {
+			return 0;
+		}
+
+		if (offset + size > l) {
+			n = l - offset;
+		}
+
+		memcpy(buf, zim_notebook + offset, n);
+
+		return n;
 	}
 
 	if (strlen(path) + 1 > sizeof s) {

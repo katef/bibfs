@@ -6,6 +6,7 @@ struct bibfs_state {
 	struct stat st;
 	FILE *f;
 	struct bib_entry *e;
+	int zim;
 };
 
 const char *

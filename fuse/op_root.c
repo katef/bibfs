@@ -8,6 +8,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <errno.h>
 
 #include <bib/bib.h>
 #include <bib/find.h>
@@ -43,6 +44,12 @@ op_readdir_root(struct bibfs_state *b,
 
 	for (e = b->e; e != NULL; e = e->next) {
 		fill(buf, e->key, NULL, 0);
+	}
+
+	if (b->zim) {
+		if (1 == fill(buf, "notebook.zim", NULL, 0)) {
+			return -ENOBUFS;
+		}
 	}
 
 	return 0;

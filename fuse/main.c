@@ -40,13 +40,14 @@ main(int argc, char *argv[])
 
 	b.path = NULL;
 	b.f    = NULL;
+	b.zim  = 0;
 
 	/* TODO: if we're being called from /etc/fstab, drop privledges to non-root */
 
 	{
 		int c;
 
-		while (c = getopt(argc, argv, "d:f:"), c != -1) {
+		while (c = getopt(argc, argv, "d:f:z"), c != -1) {
 			switch (c) {
 			case 'd':
 				if (-1 == debug_flags(optarg)) {
@@ -56,6 +57,10 @@ main(int argc, char *argv[])
 
 			case 'f':
 				b.path = optarg;
+				break;
+
+			case 'z':
+				b.zim = 1;
 				break;
 
 			default:
@@ -85,7 +90,7 @@ main(int argc, char *argv[])
 
 usage:
 
-	fprintf(stderr, "usage: bibfs [-d ablc] -f file.bib [-- 'bibfs' [fuse options]]\n");
+	fprintf(stderr, "usage: bibfs [-d ablc] [-z] -f file.bib [-- 'bibfs' [fuse options]]\n");
 
 	return 1;
 }
