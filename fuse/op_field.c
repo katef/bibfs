@@ -134,6 +134,7 @@ op_readlink_field(struct bibfs_state *b, char *buf, size_t bufsz,
 			return -ENAMETOOLONG;
 		}
 
+		/* TODO: cli option to prefix a directory for non-absolute paths */
 		strcpy(buf, v->text);
 
 		return 0;
@@ -242,7 +243,7 @@ op_read_field(struct bibfs_state *b, char *buf, size_t size, off_t offset, struc
 			continue;
 		}
 
-		/* TODO: concat all values */
+		/* TODO: concat all values and append a newline */
 		s = f->value->text;
 
 		goto done;
