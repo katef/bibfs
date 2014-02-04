@@ -31,5 +31,15 @@ int
 op_readlink_field(struct bibfs_state *b, char *buf, size_t bufsz,
 	const char *key, const char *name);
 
+int
+op_open_field(struct bibfs_state *b,
+	struct fuse_file_info *fi,
+	const char *key, const char *name);
+
+int
+op_read_field(struct bibfs_state *b,
+	char *buf, size_t size, off_t offset, struct fuse_file_info *fi,
+	const char *key, const char *name);
+
 #endif
 

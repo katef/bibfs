@@ -142,3 +142,135 @@ op_readlink_field(struct bibfs_state *b, char *buf, size_t bufsz,
 	return -ENOENT;
 }
 
+int
+op_open_field(struct bibfs_state *b, struct fuse_file_info *fi,
+	const char *key, const char *name)
+{
+	struct bib_entry *e;
+	struct bib_field *f;
+	struct bib_value *v;
+	size_t i;
+
+	/* TODO: share with file contents. add a callback to concat values */
+	struct {
+		const char *path;
+		const char *name;
+	} a[] = {
+		{ "abstract.txt", "abstract" },
+		{ "notes.txt",    "notes"    }
+	};
+
+	assert(b != NULL);
+	assert(fi != NULL);
+	assert(key != NULL);
+	assert(name != NULL);
+
+	e = find_entry(b->e, key);
+	if (e == NULL) {
+		return -ENOENT;
+	}
+
+	for (i = 0; i < sizeof a / sizeof *a; i++) {
+		if (0 != strcmp(a[i].path, name)) {
+			continue;
+		}
+
+		f = find_field(e->field, a[i].name);
+		if (f == NULL) {
+			continue;
+		}
+
+		goto done;
+	}
+
+	if (0 == strcmp(name, "index.bib")) {
+		goto done;
+	}
+
+	return -ENOENT;
+
+done:
+
+	if ((fi->flags & 03) != O_RDONLY) {
+		return -EACCES;
+	}
+
+	return 0;
+}
+
+int
+op_read_field(struct bibfs_state *b, char *buf, size_t size, off_t offset, struct fuse_file_info *fi,
+	const char *key, const char *name)
+{
+	struct bib_entry *e;
+	struct bib_field *f;
+	const char *s;
+	size_t i;
+	size_t l;
+	int n;
+
+	/* TODO: share with file contents. add a callback to concat values */
+	struct {
+		const char *path;
+		const char *name;
+	} a[] = {
+		{ "abstract.txt", "abstract" },
+		{ "notes.txt",    "notes"    }
+	};
+
+	assert(b != NULL);
+	assert(fi != NULL);
+	assert(buf != NULL);
+	assert(offset <= size);
+	assert(key != NULL);
+	assert(name != NULL);
+
+	(void) fi;
+
+	e = find_entry(b->e, key);
+	if (e == NULL) {
+		return -ENOENT;
+	}
+
+	for (i = 0; i < sizeof a / sizeof *a; i++) {
+		if (0 != strcmp(a[i].path, name)) {
+			continue;
+		}
+
+		f = find_field(e->field, a[i].name);
+		if (f == NULL) {
+			continue;
+		}
+
+		/* TODO: concat all values */
+		s = f->value->text;
+
+		goto done;
+	}
+
+	if (0 == strcmp(name, "index.bib")) {
+		/* TODO: use out() to write a single entry to memory */
+
+		s = "@TODO {TODO\n\ttodo = {TODO}\n}\n";
+
+		goto done;
+	}
+
+	return -ENOENT;
+
+done:
+
+	l = strlen(s);
+	if (offset >= l) {
+		return 0;
+	}
+
+	if (offset + size > l) {
+		n = l - offset;
+	}
+
+	memcpy(buf, s + offset, n);
+
+	return n;
+}
+
