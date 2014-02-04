@@ -11,6 +11,7 @@
 
 #include <assert.h>
 #include <string.h>
+#include <stdarg.h>
 #include <limits.h>
 #include <stdio.h>
 #include <errno.h>
@@ -19,28 +20,28 @@
 #include "op.h"
 
 static size_t
-tokparts(char *s, const char *a[], size_t count)
+split(char *s, size_t count, ...)
 {
-	size_t n;
+	size_t n, z;
+	va_list ap;
 
 	assert(s != NULL);
-	assert(a != NULL);
 
-	n = 0;
+	va_start(ap, count);
 
-	for (;;) {
-		if (n < count) {
-			a[n] = s;
-		}
+	for (n = 0; *s != '\0'; n++) {
+		*s++ = '\0';
 
-		s += strcspn(s, "/");
-		if (*s == '\0') {
+		z = strcspn(s, "/");
+		if (z == 0) {
 			break;
 		}
 
-		*s = '\0';
-		s++;
-		n++;
+		if (n < count) {
+			* va_arg(ap, const char **) = s;
+		}
+
+		s += z;
 	}
 
 	return n;
@@ -52,7 +53,7 @@ bibfs_getattr(const char *path, struct stat *st)
 	struct bibfs_state *b = fuse_get_context()->private_data;
 
 	char s[PATH_MAX];
-	const char *a[3];
+	const char *key, *name;
 
 	assert(b != NULL);
 	assert(path != NULL);
@@ -71,10 +72,10 @@ bibfs_getattr(const char *path, struct stat *st)
 
 	*st = b->st;
 
-	switch (tokparts(s, a, sizeof a / sizeof *a)) {
+	switch (split(s, 2, &key, &name)) {
 	case 0: return op_getattr_root (b, st);
-	case 1: return op_getattr_entry(b, st, a[1]);
-	case 2: return op_getattr_field(b, st, a[1], a[2]);
+	case 1: return op_getattr_entry(b, st, key);
+	case 2: return op_getattr_field(b, st, key, name);
 
 	default:
 		return -ENOENT;
@@ -87,7 +88,7 @@ bibfs_readlink(const char *path, char *buf, size_t bufsz)
 	struct bibfs_state *b = fuse_get_context()->private_data;
 
 	char s[PATH_MAX];
-	const char *a[3];
+	const char *key, *name;
 
 	assert(b != NULL);
 	assert(path != NULL);
@@ -104,10 +105,10 @@ bibfs_readlink(const char *path, char *buf, size_t bufsz)
 
 	strcpy(s, path);
 
-	switch (tokparts(s, a, sizeof a / sizeof *a)) {
+	switch (split(s, 2, &key, &name)) {
 	case 0: return -EINVAL;
 	case 1: return -EINVAL;
-	case 2: return op_readlink_field(b, buf, bufsz, a[1], a[2]);
+	case 2: return op_readlink_field(b, buf, bufsz, key, name);
 
 	default:
 		return -ENOENT;
@@ -121,7 +122,7 @@ bibfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
 	struct bibfs_state *b = fuse_get_context()->private_data;
 
 	char s[PATH_MAX];
-	const char *a[2];
+	const char *key;
 
 	assert(b != NULL);
 	assert(path != NULL);
@@ -147,9 +148,9 @@ bibfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
 		return -ENOBUFS;
 	}
 
-	switch (tokparts(s, a, sizeof a / sizeof *a)) {
+	switch (split(s, 1, &key)) {
 	case 0: return op_readdir_root (b, buf, fill, offset, fi);
-	case 1: return op_readdir_entry(b, buf, fill, offset, fi, a[1]);
+	case 1: return op_readdir_entry(b, buf, fill, offset, fi, key);
 
 	default:
 		return -ENOENT;
