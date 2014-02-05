@@ -61,6 +61,7 @@ out_json(FILE *f, const struct bib_entry *e, int all)
 	if (!all) {
 		out_entry(f, e);
 		fprintf(f, "\n");
+		return;
 	}
 
 	fprintf(f, "[\n");
