@@ -15,6 +15,7 @@
 #include <bib/find.h>
 
 #include "internal.h"
+#include "field.h"
 #include "op.h"
 
 static int
@@ -47,15 +48,6 @@ entry_readdir(struct bibfs_state *b,
 	const struct bib_entry *e;
 	const struct bib_field *f;
 	size_t i;
-
-	/* TODO: share with file contents. add a callback to concat values */
-	struct {
-		const char *path;
-		const char *name;
-	} fields[] = {
-		{ "abstract.txt", "abstract" },
-		{ "notes.txt",    "notes"    }
-	};
 
 	assert(b != NULL);
 	assert(buf != NULL);

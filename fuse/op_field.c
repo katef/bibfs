@@ -15,16 +15,8 @@
 #include <bib/find.h>
 
 #include "internal.h"
+#include "field.h"
 #include "op.h"
-
-/* TODO: share with file contents. add a callback to concat values */
-struct {
-	const char *path;
-	const char *name;
-} fields[] = {
-	{ "abstract.txt", "abstract" },
-	{ "notes.txt",    "notes"    }
-};
 
 static int
 field_getattr(struct bibfs_state *b,
