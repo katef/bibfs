@@ -37,13 +37,13 @@ debug_flags(const char *s)
 
 static void
 	(*out_lookup(const char *s))
-	(FILE *, const struct bib_entry *)
+	(FILE *, const struct bib_entry *, int)
 {
 	size_t i;
 
 	struct {
 		const char *name;
-		void (*f)(FILE *, const struct bib_entry *);
+		void (*f)(FILE *, const struct bib_entry *, int);
 	} a[] = {
 		{ "bibtex", out_bibtex },
 		{ "json",   out_json   }
@@ -61,7 +61,7 @@ static void
 int
 main(int argc, char *argv[])
 {
-	void (*out)(FILE *, const struct bib_entry *);
+	void (*out)(FILE *, const struct bib_entry *, int);
 
 	out = NULL;
 
@@ -114,7 +114,7 @@ main(int argc, char *argv[])
 		/* TODO: convert to tree or qsort for quick lookup by key */
 
 		if (out != NULL) {
-			out(stdout, e);
+			out(stdout, e, 1);
 		}
 
 		bib_free_entry(e);

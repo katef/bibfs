@@ -35,23 +35,39 @@ out_field(FILE *f, const struct bib_field *q)
 	}
 }
 
+static void
+out_entry(FILE *f, const struct bib_entry *e)
+{
+	assert(e != NULL);
+	assert(e->type != NULL);
+	assert(e->key != NULL);
+
+	fprintf(f, "  {\n");
+	fprintf(f, "    type:   \"%s\",\n", e->type);
+	fprintf(f, "    key:    \"%s\",\n", e->key);
+	fprintf(f, "    fields: [\n");
+	out_field(f, e->field);
+	fprintf(f, "    ]\n");
+	fprintf(f, "  }");
+}
+
 void
-out_json(FILE *f, const struct bib_entry *e)
+out_json(FILE *f, const struct bib_entry *e, int all)
 {
 	const struct bib_entry *p;
 
 	assert(f != NULL);
 
+	if (!all) {
+		out_entry(f, e);
+		fprintf(f, "\n");
+	}
+
 	fprintf(f, "[\n");
 
 	for (p = e; p != NULL; p = p->next) {
-		fprintf(f, "  {\n");
-		fprintf(f, "    type:   \"%s\",\n", p->type);
-		fprintf(f, "    key:    \"%s\",\n", p->key);
-		fprintf(f, "    fields: [\n");
-		out_field(f, p->field);
-		fprintf(f, "    ]\n");
-		fprintf(f, "  }%s\n", p->next ? ",\n" : "");
+		out_entry(f, e);
+		fprintf(f, "%s\n", p->next ? ",\n" : "");
 	}
 
 	fprintf(f, "]\n");

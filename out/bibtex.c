@@ -30,18 +30,33 @@ out_field(FILE *f, const struct bib_field *q)
 	}
 }
 
+static void
+out_entry(FILE *f, const struct bib_entry *e)
+{
+	assert(e != NULL);
+	assert(e->type != NULL);
+	assert(e->key != NULL);
+
+	fprintf(f, "@%s{%s,\n", e->type, e->key);
+	out_field(f, e->field);
+	fprintf(f, "}\n");
+	fprintf(f, "\n");
+}
+
 void
-out_bibtex(FILE *f, const struct bib_entry *e)
+out_bibtex(FILE *f, const struct bib_entry *e, int all)
 {
 	const struct bib_entry *p;
 
 	assert(f != NULL);
 
+	if (!all) {
+		out_entry(f, e);
+		return;
+	}
+
 	for (p = e; p != NULL; p = p->next) {
-		fprintf(f, "@%s{%s,\n", p->type, p->key);
-		out_field(f, p->field);
-		fprintf(f, "}\n");
-		fprintf(f, "\n");
+		out_entry(f, e);
 	}
 }
 

@@ -3,8 +3,8 @@
 
 struct bib_entry;
 
-void out_bibtex(FILE *f, const struct bib_entry *e);
-void out_json(FILE *f, const struct bib_entry *e);
+void out_bibtex(FILE *f, const struct bib_entry *e, int all);
+void out_json(FILE *f, const struct bib_entry *e, int all);
 
 #endif
 
