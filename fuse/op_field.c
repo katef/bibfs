@@ -137,25 +137,10 @@ field_read(struct bibfs_state *b,
 		/* TODO: concat all values and append a newline */
 		s = f->value->text;
 
-		goto done;
+		return sread(f->value->text, buf, size, offset);
 	}
 
 	return -ENOENT;
-
-done:
-
-	l = strlen(s);
-	if (offset >= l) {
-		return 0;
-	}
-
-	if (offset + size > l) {
-		n = l - offset;
-	}
-
-	memcpy(buf, s + offset, n);
-
-	return n;
 }
 
 struct bibfs_op op_field = {

@@ -138,22 +138,9 @@ zim_read(struct bibfs_state *b,
 
 	s = "TODO"; /* TODO: format some zim wiki stuff here */
 
-	goto done;
-
 done:
 
-	l = strlen(s);
-	if (offset >= l) {
-		return 0;
-	}
-
-	if (offset + size > l) {
-		n = l - offset;
-	}
-
-	memcpy(buf, s + offset, n);
-
-	return n;
+	return sread(s, buf, size, offset);
 }
 
 struct bibfs_op op_zim = {
