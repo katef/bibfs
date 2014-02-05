@@ -89,18 +89,14 @@ field_open(struct bibfs_state *b,
 			continue;
 		}
 
-		goto done;
+		if ((fi->flags & 03) != O_RDONLY) {
+			return -EACCES;
+		}
+
+		return 0;
 	}
 
 	return -ENOENT;
-
-done:
-
-	if ((fi->flags & 03) != O_RDONLY) {
-		return -EACCES;
-	}
-
-	return 0;
 }
 
 static int
