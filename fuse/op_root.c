@@ -7,6 +7,8 @@
 #include <fuse.h>
 
 #include <assert.h>
+#include <limits.h>
+#include <string.h>
 #include <stdio.h>
 #include <errno.h>
 
@@ -16,11 +18,14 @@
 #include "internal.h"
 #include "op.h"
 
-int
-op_getattr_root(struct bibfs_state *b, struct stat *st)
+static int
+root_getattr(struct bibfs_state *b,
+	struct stat *st,
+	const char *key, const char *name)
 {
 	assert(b != NULL);
 	assert(st != NULL);
+	assert(key == NULL && name == NULL);
 
 	st->st_mode  = S_IFDIR | 0755;
 	st->st_nlink = bib_count(b->e) + 2;
@@ -28,9 +33,10 @@ op_getattr_root(struct bibfs_state *b, struct stat *st)
 	return 0;
 }
 
-int
-op_readdir_root(struct bibfs_state *b,
-	void *buf, fuse_fill_dir_t fill, off_t offset, struct fuse_file_info *fi)
+static int
+root_readdir(struct bibfs_state *b,
+	void *buf, fuse_fill_dir_t fill, off_t offset, struct fuse_file_info *fi,
+	const char *key, const char *name)
 {
 	const struct bib_entry *e;
 
@@ -38,12 +44,29 @@ op_readdir_root(struct bibfs_state *b,
 	assert(buf != NULL);
 	assert(fill != NULL);
 	assert(fi != NULL);
+	assert(key == NULL && name == NULL);
 
 	(void) offset;
 	(void) fi;
 
 	for (e = b->e; e != NULL; e = e->next) {
-		fill(buf, e->key, NULL, 0);
+		if (1 == fill(buf, e->key, NULL, 0)) {
+			return -ENOBUFS;
+		}
+
+		if (b->zim) {
+			char s[FILENAME_MAX];
+
+			if (strlen(e->key) + 4 + 1 > sizeof s) {
+				return -ENAMETOOLONG;
+			}
+
+			sprintf(s, "%s.txt", e->key);
+
+			if (1 == fill(buf, s, NULL, 0)) {
+				return -ENOBUFS;
+			}
+		}
 	}
 
 	if (b->zim) {
@@ -54,4 +77,12 @@ op_readdir_root(struct bibfs_state *b,
 
 	return 0;
 }
+
+struct bibfs_op op_root = {
+	root_getattr,
+	root_readdir,
+	NULL,
+	NULL,
+	NULL
+};
 

@@ -6,8 +6,11 @@ SRC += fuse/reload.c
 
 SRC += fuse/op.c
 SRC += fuse/op_root.c
+SRC += fuse/op_zim.c
 SRC += fuse/op_entry.c
+SRC += fuse/op_index.c
 SRC += fuse/op_field.c
+SRC += fuse/op_file.c
 
 PROG += bibfs
 

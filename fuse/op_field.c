@@ -17,39 +17,39 @@
 #include "internal.h"
 #include "op.h"
 
-int
-op_getattr_field(struct bibfs_state *b, struct stat *st,
+/* TODO: share with file contents. add a callback to concat values */
+struct {
+	const char *path;
+	const char *name;
+} fields[] = {
+	{ "abstract.txt", "abstract" },
+	{ "notes.txt",    "notes"    }
+};
+
+static int
+field_getattr(struct bibfs_state *b,
+	struct stat *st,
 	const char *key, const char *name)
 {
 	struct bib_entry *e;
 	struct bib_field *f;
 	size_t i;
 
-	/* TODO: share with file contents. add a callback to concat values */
-	struct {
-		const char *path;
-		const char *name;
-	} a[] = {
-		{ "abstract.txt", "abstract" },
-		{ "notes.txt",    "notes"    }
-	};
-
 	assert(b != NULL);
 	assert(st != NULL);
-	assert(key != NULL);
-	assert(name != NULL);
+	assert(key != NULL && name != NULL);
 
 	e = find_entry(b->e, key);
 	if (e == NULL) {
 		return -ENOENT;
 	}
 
-	for (i = 0; i < sizeof a / sizeof *a; i++) {
-		if (0 != strcmp(name, a[i].path)) {
+	for (i = 0; i < sizeof fields / sizeof *fields; i++) {
+		if (0 != strcmp(fields[i].name, name)) {
 			continue;
 		}
 
-		f = find_field(e->field, a[i].name);
+		f = find_field(e->field, fields[i].name);
 		if (e == NULL) {
 			return -ENOENT;
 		}
@@ -65,86 +65,12 @@ op_getattr_field(struct bibfs_state *b, struct stat *st,
 		return 0;
 	}
 
-	f = find_field(e->field, "file");
-	if (f != NULL) {
-		struct bib_value *v;
-		const char *n;
-
-		for (v = f->value; v != NULL; v = v->next) {
-			n = filename(v->text);
-
-			if (0 != strcmp(name, n)) {
-				continue;
-			}
-
-			st->st_size  = 0;
-
-			/* TODO: consider relative paths */
-			if (v->text[0] == '/') {
-				(void) stat(v->text, st);
-			}
-
-			st->st_mode  = S_IFLNK | 0444;
-			st->st_nlink = 1;
-
-			return 0;
-		}
-	}
-
-	if (0 == strcmp(name, "index.bib")) {
-		st->st_mode  = S_IFREG | 0444;
-		st->st_nlink = 1;
-		st->st_size  = 57; /* TODO: size of formatted entry */
-
-		return 0;
-	}
-
 	return -ENOENT;
 }
 
-int
-op_readlink_field(struct bibfs_state *b, char *buf, size_t bufsz,
-	const char *key, const char *name)
-{
-	struct bib_entry *e;
-	struct bib_field *f;
-	struct bib_value *v;
-
-	assert(b != NULL);
-	assert(buf != NULL);
-	assert(key != NULL);
-	assert(name != NULL);
-
-	e = find_entry(b->e, key);
-	if (e == NULL) {
-		return -ENOENT;
-	}
-
-	f = find_field(e->field, "file");
-	if (f == NULL) {
-		return -ENOENT;
-	}
-
-	for (v = f->value; v != NULL; v = v->next) {
-		if (0 != strcmp(name, filename(v->text))) {
-			continue;
-		}
-
-		if (strlen(v->text) + 1 > bufsz) {
-			return -ENAMETOOLONG;
-		}
-
-		/* TODO: cli option to prefix a directory for non-absolute paths */
-		strcpy(buf, v->text);
-
-		return 0;
-	}
-
-	return -ENOENT;
-}
-
-int
-op_open_field(struct bibfs_state *b, struct fuse_file_info *fi,
+static int
+field_open(struct bibfs_state *b,
+	struct fuse_file_info *fi,
 	const char *key, const char *name)
 {
 	struct bib_entry *e;
@@ -152,39 +78,25 @@ op_open_field(struct bibfs_state *b, struct fuse_file_info *fi,
 	struct bib_value *v;
 	size_t i;
 
-	/* TODO: share with file contents. add a callback to concat values */
-	struct {
-		const char *path;
-		const char *name;
-	} a[] = {
-		{ "abstract.txt", "abstract" },
-		{ "notes.txt",    "notes"    }
-	};
-
 	assert(b != NULL);
 	assert(fi != NULL);
-	assert(key != NULL);
-	assert(name != NULL);
+	assert(key != NULL && name != NULL);
 
 	e = find_entry(b->e, key);
 	if (e == NULL) {
 		return -ENOENT;
 	}
 
-	for (i = 0; i < sizeof a / sizeof *a; i++) {
-		if (0 != strcmp(a[i].path, name)) {
+	for (i = 0; i < sizeof fields / sizeof *fields; i++) {
+		if (0 != strcmp(fields[i].name, name)) {
 			continue;
 		}
 
-		f = find_field(e->field, a[i].name);
+		f = find_field(e->field, fields[i].name);
 		if (f == NULL) {
 			continue;
 		}
 
-		goto done;
-	}
-
-	if (0 == strcmp(name, "index.bib")) {
 		goto done;
 	}
 
@@ -199,8 +111,9 @@ done:
 	return 0;
 }
 
-int
-op_read_field(struct bibfs_state *b, char *buf, size_t size, off_t offset, struct fuse_file_info *fi,
+static int
+field_read(struct bibfs_state *b,
+	char *buf, size_t size, off_t offset, struct fuse_file_info *fi,
 	const char *key, const char *name)
 {
 	struct bib_entry *e;
@@ -210,21 +123,11 @@ op_read_field(struct bibfs_state *b, char *buf, size_t size, off_t offset, struc
 	size_t l;
 	int n;
 
-	/* TODO: share with file contents. add a callback to concat values */
-	struct {
-		const char *path;
-		const char *name;
-	} a[] = {
-		{ "abstract.txt", "abstract" },
-		{ "notes.txt",    "notes"    }
-	};
-
 	assert(b != NULL);
 	assert(fi != NULL);
 	assert(buf != NULL);
 	assert(offset <= size);
-	assert(key != NULL);
-	assert(name != NULL);
+	assert(key != NULL && name != NULL);
 
 	(void) fi;
 
@@ -233,26 +136,18 @@ op_read_field(struct bibfs_state *b, char *buf, size_t size, off_t offset, struc
 		return -ENOENT;
 	}
 
-	for (i = 0; i < sizeof a / sizeof *a; i++) {
-		if (0 != strcmp(a[i].path, name)) {
+	for (i = 0; i < sizeof fields / sizeof *fields; i++) {
+		if (0 != strcmp(fields[i].name, name)) {
 			continue;
 		}
 
-		f = find_field(e->field, a[i].name);
+		f = find_field(e->field, fields[i].name);
 		if (f == NULL) {
 			continue;
 		}
 
 		/* TODO: concat all values and append a newline */
 		s = f->value->text;
-
-		goto done;
-	}
-
-	if (0 == strcmp(name, "index.bib")) {
-		/* TODO: use out() to write a single entry to memory */
-
-		s = "@TODO {TODO\n\ttodo = {TODO}\n}\n";
 
 		goto done;
 	}
@@ -274,4 +169,12 @@ done:
 
 	return n;
 }
+
+struct bibfs_op op_field = {
+	field_getattr,
+	NULL,
+	NULL,
+	field_open,
+	field_read
+};
 

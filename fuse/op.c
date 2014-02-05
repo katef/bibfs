@@ -19,40 +19,58 @@
 #include "internal.h"
 #include "op.h"
 
-/* TODO: name= from .bib source file */
-const char *zim_notebook =
-	"[Notebook]\n"
-	"name=Something\n"
-	"version=0.4\n"
-	"endofline=unix\n"
-	"profile=None\n";
+extern struct bibfs_op op_root;
+extern struct bibfs_op op_zim;
+extern struct bibfs_op op_entry;
+extern struct bibfs_op op_index;
+extern struct bibfs_op op_field;
+extern struct bibfs_op op_file;
 
-static size_t
-split(char *s, size_t count, ...)
+struct {
+	const char *fmt;
+	struct bibfs_op *op;
+} op[] = {
+	{ "/",               &op_root  },
+	{ "/notebook.zim",   &op_zim   },
+	{ "/*.txt",          &op_zim   },
+	{ "/*",              &op_entry },
+	{ "/*/index.bib",    &op_index },
+	{ "/*/*.txt",        &op_field },
+	{ "/*/*",            &op_file  }
+};
+
+static int
+split(char *s, const char *fmt, ...)
 {
-	size_t n, z;
+	const char *p;
 	va_list ap;
 
 	assert(s != NULL);
 
-	va_start(ap, count);
+	va_start(ap, fmt);
 
-	for (n = 0; *s != '\0'; n++) {
-		*s++ = '\0';
+	for (p = fmt; *p != '\0' && *s != '\0'; p++) {
+		if (*p == '*') {
+			* va_arg(ap, const char **) = s;
+			s += strcspn(s, "/.");
+			continue;
+		}
 
-		z = strcspn(s, "/");
-		if (z == 0) {
+		if (strspn(s, "/.")) {
+			*s++ = '\0';
+			continue;
+		}
+
+		if (*p != *s) {
 			break;
 		}
 
-		if (n < count) {
-			* va_arg(ap, const char **) = s;
-		}
-
-		s += z;
+		s++;
 	}
 
-	return n;
+	va_end(ap);
+
+	return *p == '\0' && *s == '\0';
 }
 
 static int
@@ -60,6 +78,7 @@ bibfs_getattr(const char *path, struct stat *st)
 {
 	struct bibfs_state *b = fuse_get_context()->private_data;
 
+	size_t i;
 	char s[PATH_MAX];
 	const char *key, *name;
 
@@ -72,30 +91,26 @@ bibfs_getattr(const char *path, struct stat *st)
 		return -errno;
 	}
 
-	*st = b->st;
-
-	if (b->zim && 0 == strcmp(path, "/notebook.zim")) {
-		st->st_mode  = S_IFREG | 0444;
-		st->st_nlink = 1;
-		st->st_size  = strlen(zim_notebook);
-
-		return 0;
-	}
-
 	if (strlen(path) > sizeof s) {
 		return -ENAMETOOLONG;
 	}
 
-	strcpy(s, path);
+	key  = NULL;
+	name = NULL;
 
-	switch (split(s, 2, &key, &name)) {
-	case 0: return op_getattr_root (b, st);
-	case 1: return op_getattr_entry(b, st, key);
-	case 2: return op_getattr_field(b, st, key, name);
+	for (i = 0; i < sizeof op / sizeof *op; i++) {
+		strcpy(s, path);
 
-	default:
-		return -ENOENT;
+		if (!split(s, op[i].fmt, &key, &name)) {
+			continue;
+		}
+
+		*st = b->st;
+
+		return op[i].op->getattr(b, st, key, name);
 	}
+
+	return -ENOENT;
 }
 
 static int
@@ -103,6 +118,7 @@ bibfs_readlink(const char *path, char *buf, size_t bufsz)
 {
 	struct bibfs_state *b = fuse_get_context()->private_data;
 
+	size_t i;
 	char s[PATH_MAX];
 	const char *key, *name;
 
@@ -119,16 +135,20 @@ bibfs_readlink(const char *path, char *buf, size_t bufsz)
 		return -ENAMETOOLONG;
 	}
 
-	strcpy(s, path);
+	key  = NULL;
+	name = NULL;
 
-	switch (split(s, 2, &key, &name)) {
-	case 0: return -EINVAL;
-	case 1: return -EINVAL;
-	case 2: return op_readlink_field(b, buf, bufsz, key, name);
+	for (i = 0; i < sizeof op / sizeof *op; i++) {
+		strcpy(s, path);
 
-	default:
-		return -ENOENT;
+		if (!split(s, op[i].fmt, &key, &name)) {
+			continue;
+		}
+
+		return op[i].op->readlink(b, buf, bufsz, key, name);
 	}
+
+	return -ENOENT;
 }
 
 static int
@@ -137,8 +157,9 @@ bibfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
 {
 	struct bibfs_state *b = fuse_get_context()->private_data;
 
+	size_t i;
 	char s[PATH_MAX];
-	const char *key;
+	const char *key, *name;
 
 	assert(b != NULL);
 	assert(path != NULL);
@@ -154,23 +175,28 @@ bibfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
 		return -ENAMETOOLONG;
 	}
 
-	strcpy(s, path);
+	key  = NULL;
+	name = NULL;
 
-	if (1 == fill(buf, ".",  NULL, 0)) {
-		return -ENOBUFS;
+	for (i = 0; i < sizeof op / sizeof *op; i++) {
+		strcpy(s, path);
+
+		if (!split(s, op[i].fmt, &key, &name)) {
+			continue;
+		}
+
+		if (1 == fill(buf, ".",  NULL, 0)) {
+			return -ENOBUFS;
+		}
+
+		if (1 == fill(buf, "..", NULL, 0)) {
+			return -ENOBUFS;
+		}
+
+		return op[i].op->readdir(b, buf, fill, offset, fi, key, name);
 	}
 
-	if (1 == fill(buf, "..", NULL, 0)) {
-		return -ENOBUFS;
-	}
-
-	switch (split(s, 1, &key)) {
-	case 0: return op_readdir_root (b, buf, fill, offset, fi);
-	case 1: return op_readdir_entry(b, buf, fill, offset, fi, key);
-
-	default:
-		return -ENOENT;
-	}
+	return -ENOENT;
 }
 
 static int
@@ -178,6 +204,7 @@ bibfs_open(const char *path, struct fuse_file_info *fi)
 {
 	struct bibfs_state *b = fuse_get_context()->private_data;
 
+	size_t i;
 	char s[PATH_MAX];
 	const char *key, *name;
 
@@ -190,28 +217,24 @@ bibfs_open(const char *path, struct fuse_file_info *fi)
 		return -errno;
 	}
 
-	if (b->zim && 0 == strcmp(path, "/notebook.zim")) {
-		if ((fi->flags & 03) != O_RDONLY) {
-			return -EACCES;
-		}
-
-		return 0;
-	}
-
 	if (strlen(path) + 1 > sizeof s) {
 		return -ENAMETOOLONG;
 	}
 
-	strcpy(s, path);
+	key  = NULL;
+	name = NULL;
 
-	switch (split(s, 2, &key, &name)) {
-	case 0: return -EINVAL;
-	case 1: return -EINVAL;
-	case 2: return op_open_field(b, fi, key, name);
+	for (i = 0; i < sizeof op / sizeof *op; i++) {
+		strcpy(s, path);
 
-	default:
-		return -ENOENT;
+		if (!split(s, op[i].fmt, &key, &name)) {
+			continue;
+		}
+
+		return op[i].op->open(b, fi, key, name);
 	}
+
+	return -ENOENT;
 }
 
 static int
@@ -220,6 +243,7 @@ bibfs_read(const char *path, char *buf, size_t size, off_t offset,
 {
 	struct bibfs_state *b = fuse_get_context()->private_data;
 
+	size_t i;
 	char s[PATH_MAX];
 	const char *key, *name;
 
@@ -234,38 +258,24 @@ bibfs_read(const char *path, char *buf, size_t size, off_t offset,
 		return -errno;
 	}
 
-	if (b->zim && 0 == strcmp(path, "/notebook.zim")) {
-		size_t l;
-		int n;
-
-		l = strlen(zim_notebook);
-		if (offset >= l) {
-			return 0;
-		}
-
-		if (offset + size > l) {
-			n = l - offset;
-		}
-
-		memcpy(buf, zim_notebook + offset, n);
-
-		return n;
-	}
-
 	if (strlen(path) + 1 > sizeof s) {
 		return -ENAMETOOLONG;
 	}
 
-	strcpy(s, path);
+	key  = NULL;
+	name = NULL;
 
-	switch (split(s, 2, &key, &name)) {
-	case 0: return -EINVAL;
-	case 1: return -EINVAL;
-	case 2: return op_read_field(b, buf, size, offset, fi, key, name);
+	for (i = 0; i < sizeof op / sizeof *op; i++) {
+		strcpy(s, path);
 
-	default:
-		return -ENOENT;
+		if (!split(s, op[i].fmt, &key, &name)) {
+			continue;
+		}
+
+		return op[i].op->read(b, buf, size, offset, fi, key, name);
 	}
+
+	return -ENOENT;
 }
 
 void

@@ -17,15 +17,16 @@
 #include "internal.h"
 #include "op.h"
 
-int
-op_getattr_entry(struct bibfs_state *b, struct stat *st,
-	const char *key)
+static int
+entry_getattr(struct bibfs_state *b,
+	struct stat *st,
+	const char *key, const char *name)
 {
 	struct bib_entry *e;
 
 	assert(b != NULL);
 	assert(st != NULL);
-	assert(key != NULL);
+	assert(key != NULL && name == NULL);
 
 	e = find_entry(b->e, key);
 	if (e == NULL) {
@@ -38,10 +39,10 @@ op_getattr_entry(struct bibfs_state *b, struct stat *st,
 	return 0;
 }
 
-int
-op_readdir_entry(struct bibfs_state *b,
+static int
+entry_readdir(struct bibfs_state *b,
 	void *buf, fuse_fill_dir_t fill, off_t offset, struct fuse_file_info *fi,
-	const char *key)
+	const char *key, const char *name)
 {
 	const struct bib_entry *e;
 	const struct bib_field *f;
@@ -51,7 +52,7 @@ op_readdir_entry(struct bibfs_state *b,
 	struct {
 		const char *path;
 		const char *name;
-	} a[] = {
+	} fields[] = {
 		{ "abstract.txt", "abstract" },
 		{ "notes.txt",    "notes"    }
 	};
@@ -60,7 +61,7 @@ op_readdir_entry(struct bibfs_state *b,
 	assert(buf != NULL);
 	assert(fill != NULL);
 	assert(fi != NULL);
-	assert(key != NULL);
+	assert(key != NULL && name == NULL);
 
 	(void) offset;
 	(void) fi;
@@ -70,13 +71,17 @@ op_readdir_entry(struct bibfs_state *b,
 		return -ENOENT;
 	}
 
-	for (i = 0; i < sizeof a / sizeof *a; i++) {
-		f = find_field(e->field, a[i].name);
+	if (1 == fill(buf, "index.bib", NULL, 0)) {
+		return -ENOBUFS;
+	}
+
+	for (i = 0; i < sizeof fields / sizeof *fields; i++) {
+		f = find_field(e->field, fields[i].name);
 		if (f == NULL) {
 			continue;
 		}
 
-		if (1 == fill(buf, a[i].path, NULL, 0)) {
+		if (1 == fill(buf, fields[i].path, NULL, 0)) {
 			return -ENOBUFS;
 		}
 	}
@@ -92,10 +97,14 @@ op_readdir_entry(struct bibfs_state *b,
 		}
 	}
 
-	if (1 == fill(buf, "index.bib", NULL, 0)) {
-		return -ENOBUFS;
-	}
-
 	return 0;
 }
+
+struct bibfs_op op_entry = {
+	entry_getattr,
+	entry_readdir,
+	NULL,
+	NULL,
+	NULL
+};
 
