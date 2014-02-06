@@ -46,7 +46,8 @@ static void
 		void (*f)(FILE *, const struct bib_entry *, int);
 	} a[] = {
 		{ "bibtex", out_bibtex },
-		{ "json",   out_json   }
+		{ "json",   out_json   },
+		{ "zim",    out_zim    }
 	};
 
 	for (i = 0; i < sizeof a / sizeof *a; i++) {
