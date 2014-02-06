@@ -6,12 +6,35 @@
 #include <bib/bib.h>
 #include <bib/refactor.h>
 
+#define WHITE " \n\t\r\v\f"
+
 static void
 stolower(char *s)
 {
+	assert(s != NULL);
+
 	while (*s != '\0') {
 		*s = tolower((unsigned char) *s);
 		s++;
+	}
+}
+
+static void
+normalise_space(char *s)
+{
+	char *p;
+
+	assert(s != NULL);
+
+	for (p = s; *p != '\0'; s++) {
+		if (isspace((unsigned char) *p)) {
+			p += strspn(p, WHITE);
+			*s = ' ';
+			continue;
+		}
+
+		*s = *p;
+		p++;
 	}
 }
 
@@ -38,6 +61,15 @@ refactor_entry(struct bib_entry *e)
 
 	for (p = e->field; p != NULL; p = p->next) {
 		stolower(p->name);
+		normalise_space(p->name);
+
+		if (0 == strcmp(p->name, "title")) {
+			struct bib_value *v;
+
+			for (v = p->value; v != NULL; v = v->next) {
+				normalise_space(v->text);
+			}
+		}
 
 		if (0 == strcmp(p->name, "file")) {
 			if (-1 == bib_split(p, ";")) {
@@ -46,8 +78,14 @@ refactor_entry(struct bib_entry *e)
 		}
 
 		if (0 == strcmp(p->name, "tags")) {
+			struct bib_value *v;
+
 			if (-1 == bib_split(p, ",")) {
 				return -1;
+			}
+
+			for (v = p->value; v != NULL; v = v->next) {
+				normalise_space(v->text);
 			}
 		}
 
