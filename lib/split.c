@@ -24,13 +24,13 @@ bib_split(struct bib_field *f, const char *delim)
 	for (v = f->value; v != NULL; v = v->next) {
 		s = v->text;
 
-		s += strcspn(s, delim);
-		if (*s == '\0') {
+		s = strstr(s, delim);
+		if (s == NULL) {
 			continue;
 		}
 
 		*s = '\0';
-		s++;
+		s += strlen(delim);
 
 		s += strspn(s, WHITE);
 
