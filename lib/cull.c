@@ -16,7 +16,6 @@ bib_cull(struct bib_entry *e)
 		/* TODO: remove values with empty strings */
 
 		if ((*p)->value == NULL) {
-			free((*p)->name);
 			free(*p);
 			*p = *next;
 			next = p;
