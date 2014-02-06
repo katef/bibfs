@@ -62,6 +62,32 @@ zim_getattr(struct bibfs_state *b,
 	st->st_nlink = 1;
 	st->st_size  = 57; /* TODO: size of zim .txt file */
 
+	{
+		FILE *f;
+		size_t n;
+		struct stat st_zim;
+		int fd;
+
+		f = tmpfile();
+		if (f == NULL) {
+			return -errno;
+		}
+
+		/* TODO: error-check */
+		out_zim(f, e, 0);
+
+		fflush(f);
+
+		if (-1 == fstat(fileno(f), &st_zim)) {
+			fclose(f);
+			return -errno;
+		}
+
+		st->st_size = st_zim.st_size;
+
+		fclose(f);
+	}
+
 	return 0;
 }
 
@@ -109,7 +135,6 @@ zim_read(struct bibfs_state *b,
 	const char *key, const char *name)
 {
 	struct bib_entry *e;
-	const char *s;
 	size_t i;
 	size_t l;
 	int n;
@@ -127,8 +152,7 @@ zim_read(struct bibfs_state *b,
 	}
 
 	if (key == NULL) {
-		s = notebook;
-		goto done;
+		return sread(notebook, buf, size, offset);
 	}
 
 	e = find_entry(b->e, key);
@@ -136,11 +160,44 @@ zim_read(struct bibfs_state *b,
 		return -ENOENT;
 	}
 
-	s = "TODO"; /* TODO: format some zim wiki stuff here */
+	{
+		FILE *f;
+		size_t n;
 
-done:
+		f = tmpfile();
+		if (f == NULL) {
+			return -errno;
+		}
 
-	return sread(s, buf, size, offset);
+		/* TODO: error-check */
+		out_zim(f, e, 0);
+
+		if (-1 == fseek(f, offset, SEEK_SET)) {
+			(void) fclose(f);
+			return -errno;
+		}
+
+		n = 0;
+
+		while (n < size) {
+			int r;
+
+			r = fread(buf + n, 1, size - n, f);
+			if (r == -1) {
+				return -errno;
+			}
+
+			if (r == 0) {
+				break;
+			}
+
+			n += r;
+		}
+
+		fclose(f);
+
+		return n;
+	}
 }
 
 struct bibfs_op op_zim = {
