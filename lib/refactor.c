@@ -1,9 +1,19 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include <bib/bib.h>
 #include <bib/refactor.h>
+
+static void
+stolower(char *s)
+{
+	while (*s != '\0') {
+		*s = tolower((unsigned char) *s);
+		s++;
+	}
+}
 
 static void
 normalise_file(const struct bib_field *f)
@@ -27,6 +37,8 @@ refactor_entry(struct bib_entry *e)
 	struct bib_field *p;
 
 	for (p = e->field; p != NULL; p = p->next) {
+		stolower(p->name);
+
 		if (0 == strcmp(p->name, "file")) {
 			if (-1 == bib_split(p, ";")) {
 				return -1;
@@ -68,6 +80,8 @@ bib_refactor(struct bib_entry *e)
 
 	for (p = e; p != NULL; p = p->next) {
 		/* TODO: unescape e */
+
+		stolower(p->type);
 
 		if (-1 == refactor_entry(p)) {
 			return -1;
