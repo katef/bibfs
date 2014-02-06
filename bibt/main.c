@@ -63,6 +63,7 @@ int
 main(int argc, char *argv[])
 {
 	void (*out)(FILE *, const struct bib_entry *, int);
+	FILE *f;
 
 	out = NULL;
 
@@ -93,16 +94,21 @@ main(int argc, char *argv[])
 		argv += optind;
 	}
 
-	if (argc != 0) {
+	if (argc != 1) {
 		goto usage;
+	}
+
+	f = fopen(argv[0], "r");
+	if (f == NULL) {
+		perror(argv[0]);
+		return 1;
 	}
 
 	{
 		struct bib_entry *e, *p;
-		struct bib_field *f;
 
 		errno = 0;
-		e =  bib_parse(stdin);
+		e =  bib_parse(f);
 		if (e == NULL && errno != 0) {
 			perror("bib_parse");
 		}
@@ -121,11 +127,13 @@ main(int argc, char *argv[])
 		bib_free_entry(e);
 	}
 
+	fclose(f);
+
 	return 0;
 
 usage:
 
-	fprintf(stderr, "usage: bibfs [-d ablc] [-e json|bibtex]\n");
+	fprintf(stderr, "usage: bibfs [-d ablc] [-e json|bibtex] <file.bib>\n");
 
 	return 1;
 }
