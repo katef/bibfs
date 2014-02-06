@@ -7,7 +7,6 @@
 %terminals%
 
 	!error;
-	!panic;
 
 	eof;
 	!nl;

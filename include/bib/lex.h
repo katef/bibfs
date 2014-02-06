@@ -3,7 +3,6 @@
 
 enum lex_type {
 	tok_error  = -1,
-	tok_panic  = -2,
 
 	tok_eof    = '\0',
 	tok_nl     = '\n',
@@ -23,7 +22,7 @@ struct lex_tok {
 
 struct lex_state {
 	unsigned b;
-	char buf[8192];
+	char *buf;
 	const char *p;
 	FILE *f;
 };

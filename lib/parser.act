@@ -20,6 +20,10 @@
 
 	#define _SVID_SOURCE
 
+	#include <sys/types.h>
+	#include <sys/stat.h>
+	#include <sys/mman.h>
+
 	#include <assert.h>
 	#include <string.h>
 	#include <stdlib.h>
@@ -178,8 +182,29 @@
 		struct lex_state l, *lex_state = &l;
 		struct act_state a, *act_state = &a;
 		struct bib_entry *e;
+		struct stat st;
+		void *p;
+		int fd;
 
 		assert(f != NULL);
+
+		if (-1 == fstat(fileno(f), &st)) {
+			return NULL;
+		}
+
+		p = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fileno(f), 0U);
+		if (p == MAP_FAILED) {
+			return NULL;
+		}
+
+		l.buf = malloc(st.st_size + 1);
+		if (l.buf == NULL) {
+			(void) munmap(p, st.st_size);
+			return NULL;
+		}
+
+		memcpy(l.buf, p, st.st_size);
+		l.buf[st.st_size] = '\0';
 
 		l.b = 0;
 		l.f = f;
@@ -187,6 +212,9 @@
 
 		ADVANCE_LEXER;	/* XXX: what if the first token is unrecognised? */
 		p_bib(lex_state, act_state, &e);
+
+		(void) munmap(p, st.st_size);
+		free(l.buf);
 
 		return e;
 	}

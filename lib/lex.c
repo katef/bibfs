@@ -23,9 +23,9 @@ zone_body(struct lex_state *l, const char **p, const char **s, const char **e)
 
 	for (;;) {
 		switch (**p) {
-		case '\n':
 		case '\0':
-			return tok_panic;
+			errno = EINVAL;
+			return tok_error;
 
 		case '}':
 			if (l->b == 1) {
@@ -65,9 +65,11 @@ zone_main(struct lex_state *l, const char **p, const char **s, const char **e)
 	*p += strspn(*p, WHITE);
 
 	switch (**p) {
+	case '\0':
+		return tok_eof;
+
 	case '%':
 		*p += strcspn(*p, "\n");
-	case '\0':
 		*s = *p;
 		*e = *s;
 		return tok_nl;
@@ -123,44 +125,6 @@ lex_next(struct lex_state *l, struct lex_tok *t)
 	assert(l->f != NULL);
 	assert(l->p != NULL);
 	assert(t != NULL);
-
-	if (*l->p == '\0') {
-		l->buf[sizeof l->buf - 1] = 'x';
-		errno = 0;
-
-		if (!fgets(l->buf, sizeof l->buf, l->f)) {
-			if (errno != 0) {
-				perror("fgets");
-
-				t->type = tok_error;
-
-				return;
-			}
-
-			t->type = tok_eof;
-
-			return;
-		}
-
-		if (debug & DEBUG_BUF) {
-			fprintf(stderr, "[%s]\n", l->buf);
-		}
-
-		if (l->buf[sizeof l->buf - 1] == '\0' && l->buf[sizeof l->buf - 2] != '\n') {
-			int c;
-
-			fprintf(stderr, "underflow; panic\n");
-
-			while (c = fgetc(l->f), c != EOF && c != '\n')
-				;
-
-			t->type = tok_panic;
-
-			return;
-		}
-
-		l->p = l->buf;
-	}
 
 	t->type = zone_main(l, &l->p, &t->s, &t->e);
 
