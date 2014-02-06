@@ -4,6 +4,8 @@
 
 #include <bib/bib.h>
 
+#define WHITE " \t\r\n\v\f"
+
 int
 bib_split(struct bib_field *f, const char *delim)
 {
@@ -22,14 +24,17 @@ bib_split(struct bib_field *f, const char *delim)
 	for (v = f->value; v != NULL; v = v->next) {
 		s = v->text;
 
-		s += strcspn(v->text, delim);
+		s += strcspn(s, delim);
 		if (*s == '\0') {
 			continue;
 		}
 
 		*s = '\0';
+		s++;
 
-		w = bib_new_value(s + 1);
+		s += strspn(s, WHITE);
+
+		w = bib_new_value(s);
 		if (w == NULL) {
 			return -1;
 		}
