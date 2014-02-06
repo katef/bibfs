@@ -153,21 +153,21 @@ out_entry(FILE *f, const struct bib_entry *e)
 
 	p = find_field(e->field, "tags");
 	if (p != NULL) {
-		fprintf(f, "**%-15s**\t",  "Tags");
+		fprintf(f, "**%-15s**\t",  "tags");
 		out_tag(f, p->value);
 		fprintf(f, "\n");
 	}
 
 	p = find_field(e->field, "keywords");
 	if (p != NULL) {
-		fprintf(f, "**%-15s**\t",  "Keywords");
+		fprintf(f, "**%-15s**\t",  "keywords");
 		out_keyword(f, p->value);
 		fprintf(f, "\n");
 	}
 
 	p = find_field(e->field, "author");
 	if (p != NULL) {
-		fprintf(f, "**%-15s**\t",  "Author");
+		fprintf(f, "**%-15s**\t",  "author");
 		out_value(f, p->value, ";");
 		fprintf(f, "\n");
 	}
