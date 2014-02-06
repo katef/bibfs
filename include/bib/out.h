@@ -8,6 +8,10 @@ void out_zimtex(FILE *f, const struct bib_entry *e, int all);
 void out_json(FILE *f, const struct bib_entry *e, int all);
 void out_zim(FILE *f, const struct bib_entry *e, int all);
 
+char *
+bib_outs(const struct bib_entry *e,
+	void (*out)(FILE *f, const struct bib_entry *, int));
+
 void
 out_bibtex_entry(FILE *f, const struct bib_entry *e,
 	int (*filter)(const char *));
