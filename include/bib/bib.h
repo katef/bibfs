@@ -20,6 +20,8 @@ struct bib_entry {
 
 	struct bib_field *field;
 
+	char *zim;
+
 	struct bib_entry *next;
 };
 

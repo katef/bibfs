@@ -43,6 +43,10 @@ bib_free_entry(struct bib_entry *e)
 		bib_free_field(e->field);
 		free(e->type);
 
+		if (e->zim != NULL) {
+			free(e->zim);
+		}
+
 		free(e);
 	}
 }
