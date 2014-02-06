@@ -27,16 +27,32 @@ refactor_entry(struct bib_entry *e)
 	struct bib_field *p;
 
 	for (p = e->field; p != NULL; p = p->next) {
-		/* TODO: and probably others */
 		if (0 == strcmp(p->name, "file")) {
 			if (-1 == bib_split(p, ";")) {
 				return -1;
 			}
+		}
 
-			bib_merge(p);
+		if (0 == strcmp(p->name, "tags")) {
+			if (-1 == bib_split(p, ",")) {
+				return -1;
+			}
+		}
+
+		if (0 == strcmp(p->name, "author")) {
+			if (-1 == bib_split(p, " and ")) {
+				return -1;
+			}
+
+			if (-1 == bib_split(p, ";")) {
+				return -1;
+			}
+		}
+
+		bib_merge(p);
+
+		if (0 == strcmp(p->name, "file")) {
 			normalise_file(p);
-		} else {
-			bib_merge(p);
 		}
 	}
 
