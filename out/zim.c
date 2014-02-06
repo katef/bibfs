@@ -16,7 +16,8 @@ filter(const char *s)
 		"notes",
 		"file",
 		"tags",
-		"author"
+		"author",
+		"keywords"
 	};
 
 	for (i = 0; i < sizeof a / sizeof *a; i++) {
@@ -97,6 +98,18 @@ out_tag(FILE *f, const struct bib_value *v)
 }
 
 static void
+out_keyword(FILE *f, const struct bib_value *v)
+{
+	const struct bib_value *p;
+
+	assert(f != NULL);
+
+	for (p = v; p != NULL; p = p->next) {
+		fprintf(f, "//%s//%s ", p->text, p->next != NULL ? "," : "");
+	}
+}
+
+static void
 out_file(FILE *f, const struct bib_value *v)
 {
 	const struct bib_value *p;
@@ -142,6 +155,13 @@ out_entry(FILE *f, const struct bib_entry *e)
 	if (p != NULL) {
 		fprintf(f, "**%-15s**\t",  "Tags");
 		out_tag(f, p->value);
+		fprintf(f, "\n");
+	}
+
+	p = find_field(e->field, "keywords");
+	if (p != NULL) {
+		fprintf(f, "**%-15s**\t",  "Keywords");
+		out_keyword(f, p->value);
 		fprintf(f, "\n");
 	}
 
