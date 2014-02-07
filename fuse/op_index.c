@@ -7,10 +7,12 @@
 #include <fuse.h>
 
 #include <assert.h>
+#include <string.h>
 #include <stdio.h>
 #include <errno.h>
 
 #include <bib/bib.h>
+#include <bib/out.h>
 #include <bib/find.h>
 
 #include "internal.h"
@@ -33,11 +35,16 @@ index_getattr(struct bibfs_state *b, struct stat *st,
 		return -ENOENT;
 	}
 
-	(void *) e;
+	if (e->bib == NULL) {
+		e->bib = bib_outs(e, out_bibtex);
+		if (e->bib == NULL) {
+			return -errno;
+		}
+	}
 
 	st->st_mode  = S_IFREG | 0444;
 	st->st_nlink = 1;
-	st->st_size  = 57; /* TODO: size of formatted entry */
+	st->st_size  = strlen(e->bib);
 
 	return 0;
 }
@@ -81,7 +88,6 @@ index_read(struct bibfs_state *b,
 {
 	struct bib_entry *e;
 	struct bib_field *f;
-	const char *s;
 	size_t i;
 	size_t l;
 	int n;
@@ -99,13 +105,14 @@ index_read(struct bibfs_state *b,
 		return -ENOENT;
 	}
 
-	(void) e;
+	if (e->bib == NULL) {
+		e->bib = bib_outs(e, out_bibtex);
+		if (e->bib == NULL) {
+			return -errno;
+		}
+	}
 
-	/* TODO: use out() to write a single entry to memory */
-
-	s = "@TODO {TODO\n\ttodo = {TODO}\n}\n";
-
-	return sread(s, buf, size, offset);
+	return sread(e->bib, buf, size, offset);
 }
 
 struct bibfs_op op_index = {
