@@ -16,5 +16,13 @@ void
 out_bibtex_entry(FILE *f, const struct bib_entry *e,
 	int (*filter)(const char *));
 
+const char *
+lookup_delim(const char *name);
+
+void
+out_values(FILE *f, const struct bib_value *v,
+	void (*puts)(FILE *, const char *),
+	const char *delim);
+
 #endif
 
