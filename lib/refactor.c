@@ -20,6 +20,15 @@ stolower(char *s)
 }
 
 static void
+stotitle(char *s)
+{
+	assert(s != NULL);
+
+	stolower(s);
+	*s = toupper((unsigned char) *s);
+}
+
+static void
 normalise_space(char *s)
 {
 	char *p;
@@ -36,6 +45,8 @@ normalise_space(char *s)
 		*s = *p;
 		p++;
 	}
+
+	*s = '\0';
 }
 
 static void
@@ -51,6 +62,20 @@ normalise_file(const struct bib_field *f)
 			v->text++;
 			v->text[strcspn(v->text, ":")] = '\0';
 		}
+	}
+}
+
+static void
+normalise_keyname(char *s)
+{
+	assert(s != NULL);
+
+	/* XXX: this is a workaround for op.c splitting by '.' */
+	while (*s != '\0') {
+		if (*s == '.') {
+			*s = '_';
+		}
+		s++;
 	}
 }
 
@@ -90,12 +115,22 @@ refactor_entry(struct bib_entry *e)
 		}
 
 		if (0 == strcmp(p->name, "author")) {
+			struct bib_value *v;
+
+			for (v = p->value; v != NULL; v = v->next) {
+				normalise_space(v->text);
+			}
+
 			if (-1 == bib_split(p, " and ")) {
 				return -1;
 			}
 
 			if (-1 == bib_split(p, ";")) {
 				return -1;
+			}
+
+			for (v = p->value; v != NULL; v = v->next) {
+				normalise_space(v->text);
 			}
 		}
 
@@ -119,7 +154,8 @@ bib_refactor(struct bib_entry *e)
 	for (p = e; p != NULL; p = p->next) {
 		/* TODO: unescape e */
 
-		stolower(p->type);
+		stotitle(p->type);
+		normalise_keyname(p->key);
 
 		if (-1 == refactor_entry(p)) {
 			return -1;
