@@ -56,6 +56,7 @@ bib_new_entry(char *type, char *key, struct bib_field *field)
 	e->key   = strcpy((char *) e + sizeof *e, key);
 	e->field = field;
 	e->zim   = NULL;
+	e->bib   = NULL;
 	e->next  = NULL;
 
 	return e;
