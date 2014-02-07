@@ -81,7 +81,7 @@
 			exit(EXIT_FAILURE); /* XXX: not really what i want to do */
 		}
 
-		memcpy(@s, act_state->t.s, n + 1);
+		memcpy(@s, act_state->t.s, n);
 		@s[n] = '\0';
 	@};
 
