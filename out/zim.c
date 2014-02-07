@@ -6,29 +6,6 @@
 #include <bib/find.h>
 #include <bib/out.h>
 
-static int
-filter(const char *s)
-{
-	size_t i;
-
-	const char *a[] = {
-		"abstract",
-		"notes",
-		"file",
-		"tags",
-		"author",
-		"keywords"
-	};
-
-	for (i = 0; i < sizeof a / sizeof *a; i++) {
-		if (0 == strcmp(s, a[i])) {
-			return 1;
-		}
-	}
-
-	return 0;
-}
-
 static const char *
 filename(const char *path)
 {
@@ -44,30 +21,64 @@ filename(const char *path)
 	return p + 1;
 }
 
-/* TODO: escaping and whatnot */
+static int
+filter(const char *s)
+{
+	size_t i;
+
+	const char *a[] = {
+		"abstract",
+		"notes",
+		"file",
+		"tags",
+		"keywords"
+	};
+
+	for (i = 0; i < sizeof a / sizeof *a; i++) {
+		if (0 == strcmp(s, a[i])) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
 
 static void
-out_value(FILE *f, const struct bib_value *v, const char *delim)
+out_str(FILE *f, const char *s)
 {
-	const struct bib_value *p;
+	fputs(s, f);
+}
 
-	assert(f != NULL);
-	assert(delim != NULL);
+static void
+out_tag(FILE *f, const char *s)
+{
+	const char *p;
 
-	for (p = v; p != NULL; p = p->next) {
-		fprintf(f, "%s%s ", p->text, p->next ? delim : "");
+	putc('@', f);
+
+	for (p = s; *p != '\0'; p++) {
+		switch (*p) {
+		case ' ': putc('_', f); continue;
+
+		default:
+			putc(*p, f);
+		}
 	}
 }
 
 static void
-out_nameval(FILE *f, const char *name, const struct bib_value *v)
+out_keyword(FILE *f, const char *s)
 {
-	assert(f != NULL);
-
-	fprintf(f, "**%-15s**\t", name);
-	out_value(f, v, ",");
-	fprintf(f, "\n");
+	fprintf(f, "//%s//", s);
 }
+
+static void
+out_file(FILE *f, const char *s)
+{
+	fprintf(f, " * [[%s|%s]]\n", s, filename(s));
+}
+
+/* TODO: escaping and whatnot */
 
 static void
 out_field(FILE *f, const struct bib_field *q)
@@ -81,43 +92,9 @@ out_field(FILE *f, const struct bib_field *q)
 			continue;
 		}
 
-		out_nameval(f, p->name, p->value);
-	}
-}
-
-static void
-out_tag(FILE *f, const struct bib_value *v)
-{
-	const struct bib_value *p;
-
-	assert(f != NULL);
-
-	for (p = v; p != NULL; p = p->next) {
-		fprintf(f, "@%s ", p->text);
-	}
-}
-
-static void
-out_keyword(FILE *f, const struct bib_value *v)
-{
-	const struct bib_value *p;
-
-	assert(f != NULL);
-
-	for (p = v; p != NULL; p = p->next) {
-		fprintf(f, "//%s//%s ", p->text, p->next != NULL ? "," : "");
-	}
-}
-
-static void
-out_file(FILE *f, const struct bib_value *v)
-{
-	const struct bib_value *p;
-
-	assert(f != NULL);
-
-	for (p = v; p != NULL; p = p->next) {
-		fprintf(f, " * [[./%s|%s]]\n", filename(p->text), filename(p->text));
+		fprintf(f, "**%-15s**\t", p->name);
+		out_values(f, p->value, out_str, ",");
+		fprintf(f, "\n");
 	}
 }
 
@@ -144,7 +121,7 @@ out_entry(FILE *f, const struct bib_entry *e)
 
 	p = find_field(e->field, "file");
 	if (p != NULL) {
-		out_file(f, p->value);
+		out_values(f, p->value, out_file, "");
 		fprintf(f, "\n");
 	}
 
@@ -154,21 +131,14 @@ out_entry(FILE *f, const struct bib_entry *e)
 	p = find_field(e->field, "tags");
 	if (p != NULL) {
 		fprintf(f, "**%-15s**\t",  "tags");
-		out_tag(f, p->value);
+		out_values(f, p->value, out_tag, " ");
 		fprintf(f, "\n");
 	}
 
 	p = find_field(e->field, "keywords");
 	if (p != NULL) {
 		fprintf(f, "**%-15s**\t",  "keywords");
-		out_keyword(f, p->value);
-		fprintf(f, "\n");
-	}
-
-	p = find_field(e->field, "author");
-	if (p != NULL) {
-		fprintf(f, "**%-15s**\t",  "author");
-		out_value(f, p->value, ";");
+		out_values(f, p->value, out_keyword, ", ");
 		fprintf(f, "\n");
 	}
 

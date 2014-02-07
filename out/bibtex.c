@@ -5,16 +5,29 @@
 #include <bib/out.h>
 
 /* TODO: escaping and whatnot */
-
 static void
-out_value(FILE *f, const char *name, const struct bib_value *v)
+out_str(FILE *f, const char *s)
 {
-	const struct bib_value *p;
+	const char *p;
 
-	assert(f != NULL);
+	for (p = s; *p != '\0'; p++) {
+		switch (*p) {
+		case '\\': fputs("\\\\", f); continue;
 
-	for (p = v; p != NULL; p = p->next) {
-		fprintf(f, "  %s = {%s},\n", name, p->text);
+		case '{': fputs("\\{", f); continue;
+		case '}': fputs("\\}", f); continue;
+		case '&': fputs("\\&", f); continue;
+		case '$': fputs("\\$", f); continue;
+
+		case '\n': fputs(" ", f); continue;
+		case '\r': fputs(" ", f); continue;
+		case '\t': fputs(" ", f); continue;
+		case '\v': fputs(" ", f); continue;
+		case '\f': fputs(" ", f); continue;
+
+		default:
+			putc(*p, f);
+		}
 	}
 }
 
@@ -27,11 +40,19 @@ out_field(FILE *f, const struct bib_field *q,
 	assert(f != NULL);
 
 	for (p = q; p != NULL; p = p->next) {
+		const char *delim;
+
 		if (filter != NULL && filter(p->name)) {
 			continue;
 		}
 
-		out_value(f, p->name, p->value);
+		delim = lookup_delim(p->name);
+
+		fprintf(f, "  %-10s = {", p->name);
+
+		out_values(f, p->value, out_str, delim);
+
+		fprintf(f, "},\n");
 	}
 }
 

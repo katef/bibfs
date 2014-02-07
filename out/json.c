@@ -5,17 +5,27 @@
 #include <bib/out.h>
 
 /* TODO: escaping and whatnot */
-
 static void
-out_value(FILE *f, const struct bib_value *v)
+out_str(FILE *f, const char *s)
 {
-	const struct bib_value *p;
+	const char *p;
 
-	assert(f != NULL);
+	putc('\"', f);
 
-	for (p = v; p != NULL; p = p->next) {
-		fprintf(f, "\"%s\"%s ", p->text, p->next ? "," : "");
+	for (p = s; *p != '\0'; p++) {
+		switch (*p) {
+		case '\n': fputs("\\n", f); continue;
+		case '\r': fputs("\\r", f); continue;
+		case '\t': fputs("\\t", f); continue;
+		case '\v': fputs("\\v", f); continue;
+		case '\f': fputs("\\f", f); continue;
+
+		default:
+			putc(*p, f);
+		}
 	}
+
+	putc('\"', f);
 }
 
 static void
@@ -27,9 +37,12 @@ out_field(FILE *f, const struct bib_field *q)
 
 	for (p = q; p != NULL; p = p->next) {
 		fprintf(f, "      {\n");
-		fprintf(f, "        name:   \"%s\",\n", p->name);
+		fprintf(f, "        name:   ");
+		out_str(f, p->name);
+		fprintf(f, ",\n");
+
 		fprintf(f, "        values: [ ");
-		out_value(f, p->value);
+		out_values(f, p->value, out_str, ", ");
 		fprintf(f, "]\n");
 		fprintf(f, "      }%s\n", p->next ? "," : "");
 	}
