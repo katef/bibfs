@@ -184,7 +184,6 @@
 		struct bib_entry *e;
 		struct stat st;
 		void *p;
-		int fd;
 
 		assert(f != NULL);
 

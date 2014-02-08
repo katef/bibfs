@@ -34,8 +34,6 @@ zim_getattr(struct bibfs_state *b,
 	const char *key, const char *name)
 {
 	struct bib_entry *e;
-	struct bib_field *f;
-	struct bib_value *v;
 
 	assert(b != NULL);
 	assert(st != NULL);
@@ -78,7 +76,6 @@ zim_open(struct bibfs_state *b,
 	const char *key, const char *name)
 {
 	struct bib_entry *e;
-	size_t i;
 
 	assert(b != NULL);
 	assert(fi != NULL);
@@ -116,9 +113,6 @@ zim_read(struct bibfs_state *b,
 	const char *key, const char *name)
 {
 	struct bib_entry *e;
-	size_t i;
-	size_t l;
-	int n;
 
 	assert(b != NULL);
 	assert(fi != NULL);

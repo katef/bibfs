@@ -23,8 +23,6 @@ index_getattr(struct bibfs_state *b, struct stat *st,
 	const char *key, const char *name)
 {
 	struct bib_entry *e;
-	struct bib_field *f;
-	size_t i;
 
 	assert(b != NULL);
 	assert(st != NULL);
@@ -55,9 +53,6 @@ index_open(struct bibfs_state *b,
 	const char *key, const char *name)
 {
 	struct bib_entry *e;
-	struct bib_field *f;
-	struct bib_value *v;
-	size_t i;
 
 	assert(b != NULL);
 	assert(fi != NULL);
@@ -87,10 +82,6 @@ index_read(struct bibfs_state *b,
 	const char *key, const char *name)
 {
 	struct bib_entry *e;
-	struct bib_field *f;
-	size_t i;
-	size_t l;
-	int n;
 
 	assert(b != NULL);
 	assert(fi != NULL);

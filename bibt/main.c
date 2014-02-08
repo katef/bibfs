@@ -7,10 +7,11 @@
 #include <stdio.h>
 #include <errno.h>
 
-#include <bib/bib.h>
 #include <bib/debug.h>
+#include <bib/bib.h>
 #include <bib/out.h>
 #include <bib/free.h>
+#include <bib/refactor.h>
 
 #include "../build/lib/parser.h" /* XXX: needs a formal api */
 
@@ -105,7 +106,7 @@ main(int argc, char *argv[])
 	}
 
 	{
-		struct bib_entry *e, *p;
+		struct bib_entry *e;
 
 		errno = 0;
 		e =  bib_parse(f);

@@ -67,7 +67,6 @@ field_open(struct bibfs_state *b,
 {
 	struct bib_entry *e;
 	struct bib_field *f;
-	struct bib_value *v;
 	size_t i;
 
 	assert(b != NULL);
@@ -108,8 +107,6 @@ field_read(struct bibfs_state *b,
 	struct bib_field *f;
 	const char *s;
 	size_t i;
-	size_t l;
-	int n;
 
 	assert(b != NULL);
 	assert(fi != NULL);
@@ -135,9 +132,10 @@ field_read(struct bibfs_state *b,
 		}
 
 		/* TODO: concat all values and append a newline */
+		/* TODO: cache ala .bib and .zim */
 		s = f->value->text;
 
-		return sread(f->value->text, buf, size, offset);
+		return sread(s, buf, size, offset);
 	}
 
 	return -ENOENT;

@@ -26,7 +26,6 @@ file_getattr(struct bibfs_state *b,
 	struct bib_field *f;
 	struct bib_value *v;
 	const char *n;
-	size_t i;
 
 	assert(b != NULL);
 	assert(st != NULL);
