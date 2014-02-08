@@ -8,7 +8,6 @@ sread(const char *s,
 	char *buf, size_t size, off_t offset)
 {
 	size_t l;
-	int n;
 
 	assert(s != NULL);
 	assert(buf != NULL);
@@ -20,11 +19,11 @@ sread(const char *s,
 	}
 
 	if (offset + size > l) {
-		n = l - offset;
+		size = l - offset;
 	}
 
-	memcpy(buf, s + offset, n);
+	memcpy(buf, s + offset, size);
 
-	return n;
+	return size;
 }
 
