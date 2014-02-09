@@ -4,6 +4,9 @@
 #include <fuse.h>
 #include <unistd.h>
 
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
 #include <stdio.h>
 #include <errno.h>
 
@@ -13,6 +16,10 @@
 #include "op.h"
 
 unsigned debug;
+
+enum {
+	key_debug
+};
 
 static int
 debug_flags(const char *s)
@@ -25,7 +32,7 @@ debug_flags(const char *s)
 		case 'c': debug |= DEBUG_ACT; break;
 
 		default:
-			fprintf(stderr, "-d: unrecognised flag '%c'\n", *s);
+			fprintf(stderr, "-o bibfs_debug: unrecognised flag '%c'\n", *s);
 			return -1;
 		}
 	}
@@ -33,64 +40,88 @@ debug_flags(const char *s)
 	return 0;
 }
 
+const char *root;
+static int
+opt_proc(void *data, const char *arg, int key, struct fuse_args *outargs)
+{
+	struct bibfs_state *b = data;
+
+	switch (key) {
+	case FUSE_OPT_KEY_NONOPT:
+		if (b->path == NULL) {
+			b->path = arg;
+			return 0;
+		}
+
+		/* keep for fuse_main */
+		return 1;
+
+	case key_debug:
+		if (0 != strncmp(arg, "bibfs_debug=", strlen("bibfs_debug="))) {
+			return -1;
+		}
+
+		return debug_flags(arg + strlen("bibfs_debug="));
+
+	default:
+		return 1;
+	}
+}
+
 int
 main(int argc, char *argv[])
 {
+	static struct fuse_operations op;
+	struct fuse_args args;
 	struct bibfs_state b;
+
+	struct fuse_opt opts[] = {
+		{ "bibfs_debug=", -1U, key_debug },
+		{ "bibfs_zim=true",  offsetof(struct bibfs_state, zim), 1 },
+		{ "bibfs_zim=false", offsetof(struct bibfs_state, zim), 0 },
+		FUSE_OPT_END
+	};
 
 	b.path = NULL;
 	b.f    = NULL;
 	b.zim  = 0;
 
-	/* TODO: if we're being called from /etc/fstab, drop privledges to non-root */
+	args.argc      = argc;
+	args.argv      = argv;
+	args.allocated = 0;
 
-	{
-		int c;
-
-		while (c = getopt(argc, argv, "d:f:z"), c != -1) {
-			switch (c) {
-			case 'd':
-				if (-1 == debug_flags(optarg)) {
-					goto usage;
-				}
-				break;
-
-			case 'f':
-				b.path = optarg;
-				break;
-
-			case 'z':
-				b.zim = 1;
-				break;
-
-			default:
-				goto usage;
-			}
-		}
-
-		argc -= optind;
-		argv += optind;
+	/*
+	 * I really dislike this. The FUSE options parsing system (typical of things
+	 * from the Linux ecosystem) is unneccessarily overfeatured, complex, and
+	 * bewildering both as a user and as a developer. Other than stupid tricks
+	 * involving offsetof() and the like, I particularly dislike scattering options
+	 * information throughout this file, rather than dealing with it all in main().
+	 * It is also bewildering as to why an options parser would ever need to
+	 * allocate memory.
+	 *
+	 * I was much happier with my origional getopt parsing here, and passing the
+	 * remainder after "--" to FUSE. However, I've switched to using fuse_opt_parse()
+	 * here instead, for consistency with other FUSE programs.
+	 */
+	if (-1 == fuse_opt_parse(&args, &b, opts, opt_proc)) {
+		goto usage;
 	}
+
+	/* TODO: if we're being called from /etc/fstab, drop privledges to non-root */
 
 	if (b.path == NULL) {
 		goto usage;
 	}
 
-	{
-		static struct fuse_operations op;
+	bibfs_init(&op);
 
-		bibfs_init(&op);
-
-/* XXX: are argc and argv correct? */
-/* XXX: no, because argv[0] is supposed to be the filename */
-/* TODO: use the "--" as argv[0] instead */
-
-		return fuse_main(argc, argv, &op, &b);
-	}
+	return fuse_main(args.argc, args.argv, &op, &b);
 
 usage:
 
-	fprintf(stderr, "usage: bibfs [-d ablc] [-z] -f file.bib [-- 'bibfs' [fuse options]]\n");
+	fprintf(stderr,
+		"usage: bibfs [fuse options] [-o bibfs_debug={ablc}] [-o bibfs_zim={true|false}] "
+		"file.bib mountpoint\n");
 
 	return 1;
 }
