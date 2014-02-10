@@ -1,5 +1,3 @@
-/* $Id: parser.act 306 2011-07-17 13:37:02Z kate $ */
-
 %prefixes%
 
 	terminal = tok_;
