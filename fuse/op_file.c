@@ -20,16 +20,17 @@
 static int
 file_getattr(struct bibfs_state *b,
 	struct stat *st,
-	const char *key, const char *name)
+	const char *key, const char *name, const char *ext)
 {
 	struct bib_entry *e;
 	struct bib_field *f;
 	struct bib_value *v;
+	char s[FILENAME_MAX];
 	const char *n;
 
 	assert(b != NULL);
 	assert(st != NULL);
-	assert(key != NULL && name != NULL);
+	assert(key != NULL && name != NULL && ext != NULL);
 
 	e = find_entry(b->e, key);
 	if (e == NULL) {
@@ -41,10 +42,16 @@ file_getattr(struct bibfs_state *b,
 		return -ENOENT;
 	}
 
+	if (strlen(name) + 1 + strlen(ext) + 1 > sizeof s) {
+		return -ENAMETOOLONG;
+	}
+
+	sprintf(s, "%s.%s", name, ext);
+
 	for (v = f->value; v != NULL; v = v->next) {
 		n = filename(v->text);
 
-		if (0 != strcmp(name, n)) {
+		if (0 != strcmp(s, n)) {
 			continue;
 		}
 
@@ -67,15 +74,17 @@ file_getattr(struct bibfs_state *b,
 static int
 file_readlink(struct bibfs_state *b,
 	char *buf, size_t bufsz,
-	const char *key, const char *name)
+	const char *key, const char *name, const char *ext)
 {
 	struct bib_entry *e;
 	struct bib_field *f;
 	struct bib_value *v;
+	char s[FILENAME_MAX];
+	const char *n;
 
 	assert(b != NULL);
 	assert(buf != NULL);
-	assert(key != NULL && name != NULL);
+	assert(key != NULL && name != NULL && ext != NULL);
 
 	e = find_entry(b->e, key);
 	if (e == NULL) {
@@ -87,8 +96,16 @@ file_readlink(struct bibfs_state *b,
 		return -ENOENT;
 	}
 
+	if (strlen(name) + 1 + strlen(ext) + 1 > sizeof s) {
+		return -ENAMETOOLONG;
+	}
+
+	sprintf(s, "%s.%s", name, ext);
+
 	for (v = f->value; v != NULL; v = v->next) {
-		if (0 != strcmp(name, filename(v->text))) {
+		n = filename(v->text);
+
+		if (0 != strcmp(s, n)) {
 			continue;
 		}
 

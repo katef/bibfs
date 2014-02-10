@@ -21,11 +21,11 @@
 static int
 root_getattr(struct bibfs_state *b,
 	struct stat *st,
-	const char *key, const char *name)
+	const char *key, const char *name, const char *ext)
 {
 	assert(b != NULL);
 	assert(st != NULL);
-	assert(key == NULL && name == NULL);
+	assert(key == NULL && name == NULL && ext == NULL);
 
 	st->st_mode  = S_IFDIR | 0755;
 	st->st_nlink = bib_count(b->e) + 2;
@@ -36,7 +36,7 @@ root_getattr(struct bibfs_state *b,
 static int
 root_readdir(struct bibfs_state *b,
 	void *buf, fuse_fill_dir_t fill, off_t offset, struct fuse_file_info *fi,
-	const char *key, const char *name)
+	const char *key, const char *name, const char *ext)
 {
 	const struct bib_entry *e;
 
@@ -44,7 +44,7 @@ root_readdir(struct bibfs_state *b,
 	assert(buf != NULL);
 	assert(fill != NULL);
 	assert(fi != NULL);
-	assert(key == NULL && name == NULL);
+	assert(key == NULL && name == NULL && ext == NULL);
 
 	(void) offset;
 	(void) fi;

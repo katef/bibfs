@@ -20,13 +20,13 @@
 static int
 entry_getattr(struct bibfs_state *b,
 	struct stat *st,
-	const char *key, const char *name)
+	const char *key, const char *name, const char *ext)
 {
 	struct bib_entry *e;
 
 	assert(b != NULL);
 	assert(st != NULL);
-	assert(key != NULL && name == NULL);
+	assert(key != NULL && name == NULL && ext == NULL);
 
 	e = find_entry(b->e, key);
 	if (e == NULL) {
@@ -42,7 +42,7 @@ entry_getattr(struct bibfs_state *b,
 static int
 entry_readdir(struct bibfs_state *b,
 	void *buf, fuse_fill_dir_t fill, off_t offset, struct fuse_file_info *fi,
-	const char *key, const char *name)
+	const char *key, const char *name, const char *ext)
 {
 	const struct bib_entry *e;
 	const struct bib_field *f;
@@ -52,7 +52,7 @@ entry_readdir(struct bibfs_state *b,
 	assert(buf != NULL);
 	assert(fill != NULL);
 	assert(fi != NULL);
-	assert(key != NULL && name == NULL);
+	assert(key != NULL && name == NULL && ext == NULL);
 
 	(void) offset;
 	(void) fi;

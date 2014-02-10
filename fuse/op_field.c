@@ -21,7 +21,7 @@
 static int
 field_getattr(struct bibfs_state *b,
 	struct stat *st,
-	const char *key, const char *name)
+	const char *key, const char *name, const char *ext)
 {
 	struct bib_entry *e;
 	struct bib_field *f;
@@ -29,7 +29,7 @@ field_getattr(struct bibfs_state *b,
 
 	assert(b != NULL);
 	assert(st != NULL);
-	assert(key != NULL && name != NULL);
+	assert(key != NULL && name != NULL && ext == NULL);
 
 	e = find_entry(b->e, key);
 	if (e == NULL) {
@@ -63,7 +63,7 @@ field_getattr(struct bibfs_state *b,
 static int
 field_open(struct bibfs_state *b,
 	struct fuse_file_info *fi,
-	const char *key, const char *name)
+	const char *key, const char *name, const char *ext)
 {
 	struct bib_entry *e;
 	struct bib_field *f;
@@ -71,7 +71,7 @@ field_open(struct bibfs_state *b,
 
 	assert(b != NULL);
 	assert(fi != NULL);
-	assert(key != NULL && name != NULL);
+	assert(key != NULL && name != NULL && ext == NULL);
 
 	e = find_entry(b->e, key);
 	if (e == NULL) {
@@ -101,7 +101,7 @@ field_open(struct bibfs_state *b,
 static int
 field_read(struct bibfs_state *b,
 	char *buf, size_t size, off_t offset, struct fuse_file_info *fi,
-	const char *key, const char *name)
+	const char *key, const char *name, const char *ext)
 {
 	struct bib_entry *e;
 	struct bib_field *f;
@@ -112,7 +112,7 @@ field_read(struct bibfs_state *b,
 	assert(fi != NULL);
 	assert(buf != NULL);
 	assert(offset <= size);
-	assert(key != NULL && name != NULL);
+	assert(key != NULL && name != NULL && ext == NULL);
 
 	(void) fi;
 

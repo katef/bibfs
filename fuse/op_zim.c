@@ -31,13 +31,13 @@ const char *notebook =
 static int
 zim_getattr(struct bibfs_state *b,
 	struct stat *st,
-	const char *key, const char *name)
+	const char *key, const char *name, const char *ext)
 {
 	struct bib_entry *e;
 
 	assert(b != NULL);
 	assert(st != NULL);
-	assert(name == NULL);
+	assert(name == NULL && ext == NULL);
 
 	if (!b->zim) {
 		return -ENOENT;
@@ -73,13 +73,13 @@ zim_getattr(struct bibfs_state *b,
 static int
 zim_open(struct bibfs_state *b,
 	struct fuse_file_info *fi,
-	const char *key, const char *name)
+	const char *key, const char *name, const char *ext)
 {
 	struct bib_entry *e;
 
 	assert(b != NULL);
 	assert(fi != NULL);
-	assert(name == NULL);
+	assert(name == NULL && ext == NULL);
 
 	if (!b->zim) {
 		return -ENOENT;
@@ -110,7 +110,7 @@ zim_open(struct bibfs_state *b,
 static int
 zim_read(struct bibfs_state *b,
 	char *buf, size_t size, off_t offset, struct fuse_file_info *fi,
-	const char *key, const char *name)
+	const char *key, const char *name, const char *ext)
 {
 	struct bib_entry *e;
 
@@ -118,7 +118,7 @@ zim_read(struct bibfs_state *b,
 	assert(fi != NULL);
 	assert(buf != NULL);
 	assert(offset <= size);
-	assert(name == NULL);
+	assert(name == NULL && ext == NULL);
 
 	(void) fi;
 

@@ -36,7 +36,7 @@ struct {
 	{ "/*",              &op_entry },
 	{ "/*/index.bib",    &op_index },
 	{ "/*/*.txt",        &op_field },
-	{ "/*/*",            &op_file  }
+	{ "/*/*.*",          &op_file  }
 };
 
 static int
@@ -80,7 +80,7 @@ bibfs_getattr(const char *path, struct stat *st)
 
 	size_t i;
 	char s[PATH_MAX];
-	const char *key, *name;
+	const char *key, *name, *ext;
 
 	assert(b != NULL);
 	assert(path != NULL);
@@ -97,17 +97,18 @@ bibfs_getattr(const char *path, struct stat *st)
 
 	key  = NULL;
 	name = NULL;
+	ext  = NULL;
 
 	for (i = 0; i < sizeof op / sizeof *op; i++) {
 		strcpy(s, path);
 
-		if (!split(s, op[i].fmt, &key, &name)) {
+		if (!split(s, op[i].fmt, &key, &name, &ext)) {
 			continue;
 		}
 
 		*st = b->st;
 
-		return op[i].op->getattr(b, st, key, name);
+		return op[i].op->getattr(b, st, key, name, ext);
 	}
 
 	return -ENOENT;
@@ -120,7 +121,7 @@ bibfs_readlink(const char *path, char *buf, size_t bufsz)
 
 	size_t i;
 	char s[PATH_MAX];
-	const char *key, *name;
+	const char *key, *name, *ext;
 
 	assert(b != NULL);
 	assert(path != NULL);
@@ -137,15 +138,16 @@ bibfs_readlink(const char *path, char *buf, size_t bufsz)
 
 	key  = NULL;
 	name = NULL;
+	ext  = NULL;
 
 	for (i = 0; i < sizeof op / sizeof *op; i++) {
 		strcpy(s, path);
 
-		if (!split(s, op[i].fmt, &key, &name)) {
+		if (!split(s, op[i].fmt, &key, &name, &ext)) {
 			continue;
 		}
 
-		return op[i].op->readlink(b, buf, bufsz, key, name);
+		return op[i].op->readlink(b, buf, bufsz, key, name, ext);
 	}
 
 	return -ENOENT;
@@ -159,7 +161,7 @@ bibfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
 
 	size_t i;
 	char s[PATH_MAX];
-	const char *key, *name;
+	const char *key, *name, *ext;
 
 	assert(b != NULL);
 	assert(path != NULL);
@@ -177,11 +179,12 @@ bibfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
 
 	key  = NULL;
 	name = NULL;
+	ext  = NULL;
 
 	for (i = 0; i < sizeof op / sizeof *op; i++) {
 		strcpy(s, path);
 
-		if (!split(s, op[i].fmt, &key, &name)) {
+		if (!split(s, op[i].fmt, &key, &name, &ext)) {
 			continue;
 		}
 
@@ -193,7 +196,7 @@ bibfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
 			return -ENOBUFS;
 		}
 
-		return op[i].op->readdir(b, buf, fill, offset, fi, key, name);
+		return op[i].op->readdir(b, buf, fill, offset, fi, key, name, ext);
 	}
 
 	return -ENOENT;
@@ -206,7 +209,7 @@ bibfs_open(const char *path, struct fuse_file_info *fi)
 
 	size_t i;
 	char s[PATH_MAX];
-	const char *key, *name;
+	const char *key, *name, *ext;
 
 	assert(b != NULL);
 	assert(path != NULL);
@@ -223,15 +226,16 @@ bibfs_open(const char *path, struct fuse_file_info *fi)
 
 	key  = NULL;
 	name = NULL;
+	ext  = NULL;
 
 	for (i = 0; i < sizeof op / sizeof *op; i++) {
 		strcpy(s, path);
 
-		if (!split(s, op[i].fmt, &key, &name)) {
+		if (!split(s, op[i].fmt, &key, &name, &ext)) {
 			continue;
 		}
 
-		return op[i].op->open(b, fi, key, name);
+		return op[i].op->open(b, fi, key, name, ext);
 	}
 
 	return -ENOENT;
@@ -245,7 +249,7 @@ bibfs_read(const char *path, char *buf, size_t size, off_t offset,
 
 	size_t i;
 	char s[PATH_MAX];
-	const char *key, *name;
+	const char *key, *name, *ext;
 
 	assert(b != NULL);
 	assert(path != NULL);
@@ -264,15 +268,16 @@ bibfs_read(const char *path, char *buf, size_t size, off_t offset,
 
 	key  = NULL;
 	name = NULL;
+	ext  = NULL;
 
 	for (i = 0; i < sizeof op / sizeof *op; i++) {
 		strcpy(s, path);
 
-		if (!split(s, op[i].fmt, &key, &name)) {
+		if (!split(s, op[i].fmt, &key, &name, &ext)) {
 			continue;
 		}
 
-		return op[i].op->read(b, buf, size, offset, fi, key, name);
+		return op[i].op->read(b, buf, size, offset, fi, key, name, ext);
 	}
 
 	return -ENOENT;
