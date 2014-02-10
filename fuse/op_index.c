@@ -28,6 +28,9 @@ index_getattr(struct bibfs_state *b, struct stat *st,
 	assert(st != NULL);
 	assert(key != NULL && name == NULL && ext == NULL);
 
+	(void) name;
+	(void) ext;
+
 	e = find_entry(b->e, key);
 	if (e == NULL) {
 		return -ENOENT;
@@ -58,12 +61,15 @@ index_open(struct bibfs_state *b,
 	assert(fi != NULL);
 	assert(key != NULL && name == NULL && ext == NULL);
 
+	(void) name;
+	(void) ext;
+
 	e = find_entry(b->e, key);
 	if (e == NULL) {
 		return -ENOENT;
 	}
 
-	(void *) e;
+	(void) e;
 
 	goto done;
 
@@ -90,6 +96,8 @@ index_read(struct bibfs_state *b,
 	assert(key != NULL && name == NULL && ext == NULL);
 
 	(void) fi;
+	(void) name;
+	(void) ext;
 
 	e = find_entry(b->e, key);
 	if (e == NULL) {

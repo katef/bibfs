@@ -31,6 +31,8 @@ field_getattr(struct bibfs_state *b,
 	assert(st != NULL);
 	assert(key != NULL && name != NULL && ext == NULL);
 
+	(void) ext;
+
 	e = find_entry(b->e, key);
 	if (e == NULL) {
 		return -ENOENT;
@@ -72,6 +74,8 @@ field_open(struct bibfs_state *b,
 	assert(b != NULL);
 	assert(fi != NULL);
 	assert(key != NULL && name != NULL && ext == NULL);
+
+	(void) ext;
 
 	e = find_entry(b->e, key);
 	if (e == NULL) {
@@ -115,6 +119,7 @@ field_read(struct bibfs_state *b,
 	assert(key != NULL && name != NULL && ext == NULL);
 
 	(void) fi;
+	(void) ext;
 
 	e = find_entry(b->e, key);
 	if (e == NULL) {

@@ -28,6 +28,9 @@ entry_getattr(struct bibfs_state *b,
 	assert(st != NULL);
 	assert(key != NULL && name == NULL && ext == NULL);
 
+	(void) name;
+	(void) ext;
+
 	e = find_entry(b->e, key);
 	if (e == NULL) {
 		return -ENOENT;
@@ -56,6 +59,8 @@ entry_readdir(struct bibfs_state *b,
 
 	(void) offset;
 	(void) fi;
+	(void) name;
+	(void) ext;
 
 	e = find_entry(b->e, key);
 	if (e == NULL) {

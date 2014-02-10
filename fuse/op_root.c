@@ -27,6 +27,10 @@ root_getattr(struct bibfs_state *b,
 	assert(st != NULL);
 	assert(key == NULL && name == NULL && ext == NULL);
 
+	(void) key;
+	(void) name;
+	(void) ext;
+
 	st->st_mode  = S_IFDIR | 0755;
 	st->st_nlink = bib_count(b->e) + 2;
 
@@ -48,6 +52,9 @@ root_readdir(struct bibfs_state *b,
 
 	(void) offset;
 	(void) fi;
+	(void) key;
+	(void) name;
+	(void) ext;
 
 	for (e = b->e; e != NULL; e = e->next) {
 		if (1 == fill(buf, e->key, NULL, 0)) {

@@ -39,6 +39,9 @@ zim_getattr(struct bibfs_state *b,
 	assert(st != NULL);
 	assert(name == NULL && ext == NULL);
 
+	(void) name;
+	(void) ext;
+
 	if (!b->zim) {
 		return -ENOENT;
 	}
@@ -81,6 +84,9 @@ zim_open(struct bibfs_state *b,
 	assert(fi != NULL);
 	assert(name == NULL && ext == NULL);
 
+	(void) name;
+	(void) ext;
+
 	if (!b->zim) {
 		return -ENOENT;
 	}
@@ -121,6 +127,8 @@ zim_read(struct bibfs_state *b,
 	assert(name == NULL && ext == NULL);
 
 	(void) fi;
+	(void) name;
+	(void) ext;
 
 	if (!b->zim) {
 		return -ENOENT;
