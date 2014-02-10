@@ -7,6 +7,7 @@
 #include <fuse.h>
 
 #include <assert.h>
+#include <string.h>
 #include <stdio.h>
 #include <errno.h>
 
@@ -85,9 +86,16 @@ entry_readdir(struct bibfs_state *b,
 	f = find_field(e->field, "file");
 	if (f != NULL) {
 		struct bib_value *v;
+		const char *n;
 
 		for (v = f->value; v != NULL; v = v->next) {
-			if (1 == fill(buf, filename(v->text), NULL, 0)) {
+			n = filename(v->text);
+
+			if (!strchr(n, '.')) {
+				continue;
+			}
+
+			if (1 == fill(buf, n, NULL, 0)) {
 				return -ENOBUFS;
 			}
 		}
