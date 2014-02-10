@@ -109,12 +109,19 @@ file_readlink(struct bibfs_state *b,
 			continue;
 		}
 
-		if (strlen(v->text) + 1 > bufsz) {
-			return -ENAMETOOLONG;
-		}
+		if (v->text[0] != '/' && b->prefix != NULL) {
+			if (strlen(b->prefix) + 1 + strlen(v->text) + 1 > bufsz) {
+				return -ENAMETOOLONG;
+			}
 
-		/* TODO: cli option to prefix a directory for non-absolute paths */
-		strcpy(buf, v->text);
+			sprintf(buf, "%s/%s", b->prefix, v->text);
+		} else {
+			if (strlen(b->prefix) + 1 > bufsz) {
+				return -ENAMETOOLONG;
+			}
+
+			strcpy(buf, v->text);
+		}
 
 		return 0;
 	}

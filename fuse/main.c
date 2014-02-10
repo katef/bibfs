@@ -77,14 +77,16 @@ main(int argc, char *argv[])
 
 	struct fuse_opt opts[] = {
 		{ "bibfs_debug=", -1U, key_debug },
-		{ "bibfs_zim=true",  offsetof(struct bibfs_state, zim), 1 },
-		{ "bibfs_zim=false", offsetof(struct bibfs_state, zim), 0 },
+		{ "bibfs_prefix=%s", offsetof(struct bibfs_state, prefix), -1 },
+		{ "bibfs_zim=true",  offsetof(struct bibfs_state, zim),     1 },
+		{ "bibfs_zim=false", offsetof(struct bibfs_state, zim),     0 },
 		FUSE_OPT_END
 	};
 
-	b.path = NULL;
-	b.f    = NULL;
-	b.zim  = 0;
+	b.prefix = NULL;
+	b.path   = NULL;
+	b.f      = NULL;
+	b.zim    = 0;
 
 	args.argc      = argc;
 	args.argv      = argv;

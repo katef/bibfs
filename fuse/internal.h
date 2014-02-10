@@ -2,6 +2,7 @@
 #define BIB_FUSE_INTERNAL_H
 
 struct bibfs_state {
+	const char *prefix;
 	const char *path;
 	struct stat st;
 	FILE *f;
