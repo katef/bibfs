@@ -4,9 +4,13 @@ SRC += bibt/main.c
 
 PROG += bibt
 
-.for src in ${SRC:Mlib/*.c} ${SRC:Mout/*.c} ${GEN:Mlib/*.c} ${SRC:Mbibt/*.c}
+.for lib in ${LIB:Mlibbib}
+${BUILD}/bin/bibt: ${BUILD}/lib/${lib:R}.a
+.endfor
+
+.for src in ${SRC:Mbibt/*.c}
 ${BUILD}/bin/bibt: ${BUILD}/${src:R}.o
 .endfor
 
-src/main.c: build/lib/parser.h
+bibt/main.c: build/lib/parser.h
 

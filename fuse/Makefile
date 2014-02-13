@@ -24,11 +24,13 @@ CFLAGS_${src} ?= `pkg-config fuse --cflags`
 CFLAGS_${src} += -Wno-pedantic
 .endfor
 
-LFLAGS_bibfs  ?= `pkg-config fuse --libs`
-
-.for src in ${SRC:Mlib/*.c} ${SRC:Mout/*.c} ${GEN:Mlib/*.c} ${SRC:Mfuse/*.c}
-${BUILD}/bin/bibfs: ${BUILD}/${src:R}.o
+.for lib in ${LIB:Mlibbib}
+${BUILD}/bin/bibfs: ${BUILD}/lib/${lib:R}.a
 .endfor
 
-src/main.c: build/lib/parser.h
+LFLAGS_bibfs  ?= `pkg-config fuse --libs`
+
+.for src in ${SRC:Mfuse/*.c}
+${BUILD}/bin/bibfs: ${BUILD}/${src:R}.o
+.endfor
 

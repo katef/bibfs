@@ -10,6 +10,6 @@ CLEAN += ${BUILD}/bin/${prog}
 
 .for prog in ${PROG}
 ${BUILD}/bin/${prog}:
-	${CC} -o $@ ${LFLAGS} ${.ALLSRC:M*.o} ${LFLAGS_${prog}}
+	${CC} -o $@ ${LFLAGS} ${.ALLSRC:M*.o} ${.ALLSRC:M*.a} ${LFLAGS_${prog}}
 .endfor
 
