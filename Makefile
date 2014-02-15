@@ -3,6 +3,7 @@
 # targets
 all::  mkdir .WAIT lib prog
 test:: all
+install:: all
 clean::
 
 # things to override
@@ -24,5 +25,6 @@ test:: ${BUILD}/bin/bibfs ${TEST}
 .include <mk/lib.mk>
 .include <mk/prog.mk>
 .include <mk/mkdir.mk>
+.include <mk/install.mk>
 .include <mk/clean.mk>
 

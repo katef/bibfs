@@ -24,3 +24,7 @@ ${BUILD}/lib/${lib}.a: ${BUILD}/lib/${lib}.o
 	${RANLIB} $@
 .endfor
 
+.for lib in ${LIB}
+STAGE_BUILD += lib/${lib}.a
+.endfor
+
