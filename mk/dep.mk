@@ -10,7 +10,7 @@ DFLAGS += -MT ${@:R}.o
 DFLAGS += -ansi -pedantic
 .endif
 
-.for src in ${SRC} ${GEN} ${SRC}
+.for src in ${SRC} ${GEN}
 CLEAN += ${BUILD}/${src:R}.mk
 .endfor
 

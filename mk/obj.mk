@@ -11,7 +11,7 @@ CFLAGS += -ansi -pedantic
 CFLAGS += -O2
 .endif
 
-.for src in ${SRC} ${GEN} ${SRC}
+.for src in ${SRC} ${GEN}
 CLEAN += ${BUILD}/${src:R}.o
 .endfor
 
