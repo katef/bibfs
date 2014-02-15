@@ -1,7 +1,9 @@
 
 CC ?= gcc
 
-CFLAGS += -I include
+.for dir in ${INCDIR}
+CFLAGS += -I ${dir}
+.endfor
 
 .if ${CC:T:Mgcc}
 CFLAGS += -ansi -pedantic

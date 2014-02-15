@@ -1,13 +1,15 @@
 .MAKEFLAGS: -r -m mk
 
 # targets
-all::  mkdir .WAIT lib prog
+all::  mkdir .WAIT dep .WAIT lib prog
 test:: all
 install:: all
 clean::
 
 # things to override
 BUILD ?= build
+
+INCDIR += include
 
 SUBDIR += out
 SUBDIR += lib
@@ -21,6 +23,7 @@ test:: ${BUILD}/bin/bibfs ${TEST}
 
 .include <mk/subdir.mk>
 .include <mk/sid.mk>
+.include <mk/dep.mk>
 .include <mk/obj.mk>
 .include <mk/lib.mk>
 .include <mk/prog.mk>

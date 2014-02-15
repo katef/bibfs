@@ -16,7 +16,8 @@ SRC += fuse/op_file.c
 PROG += bibfs
 
 .for src in ${SRC:Mfuse/main.c} ${SRC:Mfuse/op*.c}
-CFLAGS_${src} ?= `pkg-config fuse --cflags`
+CFLAGS_${src} += `pkg-config fuse --cflags`
+DFLAGS_${src} += `pkg-config fuse --cflags`
 .endfor
 
 # <fuse/fuse_common.h> has trailing commas for enums
