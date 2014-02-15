@@ -31,3 +31,10 @@ install::
 	${INSTALL} -m ${MODE_${stage}} ${stage} ${PREFIX}/${DIR_${stage}}/${stage:T}
 .endfor
 
+.for stage in ${STAGE_BUILD}
+install:: ${BUILD}/${stage}
+.endfor
+.for stage in ${STAGE_COPY}
+install:: ${stage}
+.endfor
+
