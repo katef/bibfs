@@ -4,7 +4,8 @@ RMDIR  ?= rm -r
 
 clean::
 .for dir in ${DIR}
-	${REMOVE} ${CLEAN:M${dir}/*}
+	${REMOVE} ${CLEAN:M${dir}/*:M*.mk}
+	${REMOVE} ${CLEAN:M${dir}/*:N*.mk}
 .endfor
 
 clean::
