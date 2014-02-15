@@ -9,12 +9,14 @@ clean::
 # things to override
 BUILD ?= build
 
-INCDIR += include
-
+# layout
+SUBDIR += include/bib
 SUBDIR += out
 SUBDIR += lib
 SUBDIR += bibt
 SUBDIR += fuse
+
+INCDIR += include
 
 TEST += /usr/share/texlive/texmf-dist/bibtex/bib/base/xampl.bib
 

@@ -1,0 +1,2 @@
+.include "../mk/top.mk"
+
