@@ -1,9 +1,9 @@
 
-.for subdir in ${SUBDIR}
-.include "${subdir}/Makefile"
+.for dir in ${SUBDIR}
+.include "${dir}/Makefile"
 .endfor
 
-.for subdir in ${SUBDIR}
-DIR += ${BUILD}/${subdir}
+.for dir in ${SUBDIR}
+DIR += ${BUILD}/${dir}
 .endfor
 
