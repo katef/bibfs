@@ -12,7 +12,12 @@ CFLAGS += -O2
 .endif
 
 .for src in ${SRC} ${GEN}
+
 CLEAN += ${BUILD}/${src:R}.o
+
+${BUILD}/${src:R}.o:
+	${CC} -o $@ ${CFLAGS} ${CFLAGS_${src}} -c ${.ALLSRC:M*.c}
+
 .endfor
 
 .for src in ${SRC}
@@ -21,10 +26,5 @@ ${BUILD}/${src:R}.o: ${src}
 
 .for src in ${GEN}
 ${BUILD}/${src:R}.o: ${BUILD}/${src}
-.endfor
-
-.for src in ${SRC} ${GEN}
-${BUILD}/${src:R}.o:
-	${CC} -o $@ ${CFLAGS} ${CFLAGS_${src}} -c ${.ALLSRC:M*.c}
 .endfor
 

@@ -4,17 +4,15 @@ PREFIX  ?= /usr/local
 INSTALL ?= install
 
 .for stage in ${STAGE_BUILD} ${STAGE_COPY}
+
 DIR_${stage}  ?= ${stage:H}
 MODE_${stage} ?= 644
-.for dir in ${DIR_${stage}}
-MODE_${dir} ?= 755
-.endfor
-.endfor
 
-.for stage in ${STAGE_BUILD} ${STAGE_COPY}
 .for dir in ${DIR_${stage}}
 STAGE_DIR += ${dir}
+MODE_${dir} ?= 755
 .endfor
+
 .endfor
 
 # some awkwardness to avoid :O:u for OpenBSD make(1)

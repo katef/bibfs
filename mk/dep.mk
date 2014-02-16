@@ -10,21 +10,12 @@ DFLAGS += -MT ${@:R}.o
 DFLAGS += -ansi -pedantic
 .endif
 
-.for src in ${SRC} ${GEN}
-CLEAN += ${BUILD}/${src:R}.mk
-.endfor
-
 .for src in ${SRC}
 ${BUILD}/${src:R}.mk: ${src}
 .endfor
 
 .for src in ${GEN}
 ${BUILD}/${src:R}.mk: ${BUILD}/${src}
-.endfor
-
-.for src in ${SRC} ${GEN}
-${BUILD}/${src:R}.mk:
-	${DEP} -o $@ ${DFLAGS} ${DFLAGS_${src}} -c ${.ALLSRC:M*.c}
 .endfor
 
 # This is worth some explanation.
@@ -44,13 +35,16 @@ ${BUILD}/${src:R}.mk:
 # (now correct) generated dependencies for the next run.
 
 .for src in ${SRC} ${GEN}
-dep:: ${BUILD}/${src:R}.mk
-.endfor
 
-dep::
-.for src in ${SRC} ${GEN}
+CLEAN += ${BUILD}/${src:R}.mk
+
+${BUILD}/${src:R}.mk:
+	${DEP} -o $@ ${DFLAGS} ${DFLAGS_${src}} -c ${.ALLSRC:M*.c}
+
+dep:: ${BUILD}/${src:R}.mk
 .if exists(${BUILD}/${src:R}.mk)
 .include "${BUILD}/${src:R}.mk"
 .endif
+
 .endfor
 
