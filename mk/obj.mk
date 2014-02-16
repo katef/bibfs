@@ -7,8 +7,17 @@ CFLAGS += -I ${dir}
 
 .if ${CC:T:Mgcc}
 CFLAGS += -ansi -pedantic
-#CFLAGS += -Wall -W -Werror
-CFLAGS += -O2
+.if !defined(NDEBUG)
+CFLAGS += -Wall -W -Werror
+CFLAGS += -ggdb
+CFLAGS += -O0 # or -Og if you have it
+.else
+CFLAGS += -O3
+.endif
+.endif
+
+.if !defined(NDEBUG)
+CFLAGS += -g
 .endif
 
 .for src in ${SRC} ${GEN}

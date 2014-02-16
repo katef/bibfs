@@ -1,4 +1,6 @@
 
+STRIP ?= strip
+
 LFLAGS ?=
 
 DIR += ${BUILD}/bin
@@ -10,6 +12,9 @@ CLEAN += ${BUILD}/bin/${prog}
 
 ${BUILD}/bin/${prog}:
 	${CC} -o $@ ${LFLAGS} ${.ALLSRC:M*.o} ${.ALLSRC:M*.a} ${LFLAGS_${prog}}
+.if defined(NDEBUG)
+	${STRIP} $@
+.endif
 
 MODE_bin/${prog} = 755
 STAGE_BUILD += bin/${prog}
