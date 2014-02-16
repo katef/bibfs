@@ -115,7 +115,7 @@ zim_open(struct bibfs_state *b,
 
 static int
 zim_read(struct bibfs_state *b,
-	char *buf, size_t size, off_t offset, struct fuse_file_info *fi,
+	char *buf, size_t size, size_t offset, struct fuse_file_info *fi,
 	const char *key, const char *name, const char *ext)
 {
 	struct bib_entry *e;

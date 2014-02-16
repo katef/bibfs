@@ -255,8 +255,11 @@ bibfs_read(const char *path, char *buf, size_t size, off_t offset,
 	assert(path != NULL);
 	assert(path[0] == '/');
 	assert(buf != NULL);
-	assert(offset <= size);
 	assert(fi != NULL);
+
+	if (offset < 0) {
+		return -EINVAL;
+	}
 
 	if (-1 == bibfs_reload(b)) {
 		return -errno;

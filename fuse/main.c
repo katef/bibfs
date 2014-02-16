@@ -46,6 +46,8 @@ opt_proc(void *data, const char *arg, int key, struct fuse_args *outargs)
 {
 	struct bibfs_state *b = data;
 
+	(void) outargs;
+
 	switch (key) {
 	case FUSE_OPT_KEY_NONOPT:
 		if (b->path == NULL) {

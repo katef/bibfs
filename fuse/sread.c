@@ -5,7 +5,7 @@
 
 int
 sread(const char *s,
-	char *buf, size_t size, off_t offset)
+	char *buf, size_t size, size_t offset)
 {
 	size_t l;
 
