@@ -26,8 +26,8 @@ test:: ${BUILD}/bin/bibfs ${TEST}
 
 .include <mk/subdir.mk>
 .include <mk/sid.mk>
-.include <mk/dep.mk>
 .include <mk/obj.mk>
+.include <mk/dep.mk>
 .include <mk/lib.mk>
 .include <mk/prog.mk>
 .include <mk/mkdir.mk>
