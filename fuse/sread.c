@@ -2,6 +2,8 @@
 
 #include <assert.h>
 #include <string.h>
+#include <limits.h>
+#include <errno.h>
 
 #include "sread.h"
 
@@ -15,6 +17,11 @@ sread(const char *s,
 	assert(buf != NULL);
 	assert(offset <= size);
 
+	if (size + offset < size) {
+		errno = ERANGE;
+		return 0;
+	}
+
 	l = strlen(s);
 	if (offset >= l) {
 		return 0;
@@ -22,6 +29,12 @@ sread(const char *s,
 
 	if (offset + size > l) {
 		size = l - offset;
+	}
+
+	/* callers providing read(2) are required to return int */
+	if (size > INT_MAX) {
+		errno = EINVAL;
+		return 0;
 	}
 
 	memcpy(buf, s + offset, size);
