@@ -40,7 +40,6 @@ debug_flags(const char *s)
 	return 0;
 }
 
-const char *root;
 static int
 opt_proc(void *data, const char *arg, int key, struct fuse_args *outargs)
 {
