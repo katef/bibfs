@@ -6,13 +6,28 @@ CFLAGS += -I ${dir}
 .endfor
 
 .if ${CC:T:Mgcc}
-CFLAGS += -ansi -pedantic
 .if !defined(NDEBUG)
-CFLAGS += -Wall -W -Werror
+CFLAGS += -std=c89 -pedantic
+#CFLAGS += -Werror
+CFLAGS += -Wall -Wextra -Wno-system-headers
 CFLAGS += -ggdb
 CFLAGS += -O0 # or -Og if you have it
 .else
+CFLAGS += -ansi -pedantic
 CFLAGS += -O3
+.endif
+.endif
+
+.if ${CC:T:Mclang}
+.if !defined(NDEBUG)
+CFLAGS += -std=c89 -pedantic
+#CFLAGS += -Werror
+CFLAGS += -Weverything -Wno-system-headers
+CFLAGS += -Wno-padded # padding is not an error
+CFLAGS += -O0
+.else
+CFLAGS += -ansi -pedantic
+CFLAGS += -O4
 .endif
 .endif
 
