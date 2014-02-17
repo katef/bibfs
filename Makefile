@@ -2,6 +2,7 @@
 
 # targets
 all::  mkdir .WAIT dep .WAIT lib prog
+dep::
 test:: all
 install:: all
 clean::

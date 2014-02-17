@@ -1,5 +1,9 @@
 
-DEP ?= gcc -M
+.if ${CC:T:Mgcc}
+DEP ?= ${CC} -M
+.endif
+
+.ifdef DEP
 
 .for dir in ${INCDIR}
 DFLAGS += -I ${dir}
@@ -47,4 +51,6 @@ dep:: ${BUILD}/${src:R}.mk
 .endif
 
 .endfor
+
+.endif
 
