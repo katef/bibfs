@@ -1,6 +1,8 @@
 #include <assert.h>
 #include <string.h>
 
+#include "filename.h"
+
 const char *
 filename(const char *path)
 {

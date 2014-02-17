@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <string.h>
 
+#include "sread.h"
+
 int
 sread(const char *s,
 	char *buf, size_t size, size_t offset)

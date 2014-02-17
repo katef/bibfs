@@ -16,6 +16,7 @@
 #include <bib/find.h>
 
 #include "internal.h"
+#include "sread.h"
 #include "op.h"
 
 static int

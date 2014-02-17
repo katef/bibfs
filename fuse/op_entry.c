@@ -15,6 +15,7 @@
 #include <bib/find.h>
 
 #include "internal.h"
+#include "filename.h"
 #include "field.h"
 #include "op.h"
 

@@ -18,6 +18,7 @@
 #include <bib/find.h>
 
 #include "internal.h"
+#include "sread.h"
 #include "op.h"
 
 /* TODO: name= from .bib source file */
