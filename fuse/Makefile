@@ -21,9 +21,54 @@ DFLAGS_${src} += `pkg-config fuse --cflags`
 .endfor
 
 # <fuse/fuse_common.h> has trailing commas for enums
+.if ${CC:T:Mgcc}
 .for src in ${SRC:Mfuse/main.c} ${SRC:Mfuse/op*.c}
 CFLAGS_${src} += -Wno-pedantic
 .endfor
+.endif
+.if ${CC:T:Mclang}
+.for src in ${SRC:Mfuse/main.c} ${SRC:Mfuse/op*.c}
+CFLAGS_${src} += -Wno-c99-extensions
+.endfor
+.endif
+
+# apparently fuse has all sorts of documentation errors
+# XXX: I would prefer to use -isystem-prefix here, but I don't see how for <fuse.h>
+.if ${CC:T:Mclang}
+.for src in ${SRC:Mfuse/main.c} ${SRC:Mfuse/op*.c}
+CFLAGS_${src} += -Wno-documentation
+.endfor
+.endif
+
+# these are explicitly range checked
+.if ${CC:T:Mgcc}
+CFLAGS_fuse/op.c += -Wno-sign-compare
+.endif
+.if ${CC:T:Mclang}
+CFLAGS_fuse/op.c += -Wno-sign-conversion
+CFLAGS_fuse/op.c += -Wno-sign-compare
+.endif
+
+# op structs have their own extern declarations elsewhere
+.if ${CC:T:Mclang}
+.for src in ${SRC:Mfuse/op*.c}
+CFLAGS_${src} += -Wno-missing-variable-declarations
+.endfor
+.endif
+
+# sread(2)'s return value is explicitly range checked
+# (silly that read(2) returns int)
+.if ${CC:T:Mclang}
+CFLAGS_fuse/sread.c += -Wno-shorten-64-to-32
+.endif
+
+# explitly range checked
+# (silly that stat.st_size is an off_t)
+.if ${CC:T:Mclang}
+CFLAGS_fuse/op_zim.c   += -Wno-sign-conversion
+CFLAGS_fuse/op_index.c += -Wno-sign-conversion
+CFLAGS_fuse/op_field.c += -Wno-sign-conversion
+.endif
 
 .for lib in ${LIB:Mlibbib}
 ${BUILD}/bin/bibfs: ${BUILD}/lib/${lib:R}.a

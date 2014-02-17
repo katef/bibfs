@@ -15,6 +15,26 @@ PARSER += lib/parser.sid
 
 LIB += libbib
 
+# apparently a default: clause is not enough to satisfy -Weverything
+.if ${CC:T:Mclang}
+CFLAGS_lib/lex.c += -Wno-switch-enum
+.endif
+
+# int to char conversion for tolower()
+.if ${CC:T:Mclang}
+CFLAGS_lib/refactor.c += -Wno-conversion
+.endif
+
+# t.e - t.s where e > s
+.if ${CC:T:Mclang}
+CFLAGS_lib/parser.c += -Wno-sign-conversion
+.endif
+
+# SID generates fall-throughs which we cannot control
+.if ${CC:T:Mclang}
+CFLAGS_lib/parser.c += -Wno-switch-enum
+.endif
+
 .for src in ${SRC:Mlib/*.c} ${SRC:Mout/*.c} ${GEN:Mlib/*.c}
 ${BUILD}/lib/libbib.o: ${BUILD}/${src:R}.o
 .endfor
