@@ -6,20 +6,20 @@ CFLAGS += -I ${dir}
 .endfor
 
 .if ${CC:T:Mgcc}
-.if !defined(NDEBUG)
+.if defined(DEBUG)
 CFLAGS += -std=c89 -pedantic
 #CFLAGS += -Werror
 CFLAGS += -Wall -Wextra -Wno-system-headers
 CFLAGS += -ggdb
 CFLAGS += -O0 # or -Og if you have it
 .else
-CFLAGS += -ansi -pedantic
+CFLAGS += -std=c89 -pedantic
 CFLAGS += -O3
 .endif
 .endif
 
 .if ${CC:T:Mclang}
-.if !defined(NDEBUG)
+.if defined(DEBUG)
 CFLAGS += -std=c89 -pedantic
 #CFLAGS += -Werror
 CFLAGS += -Weverything -Wno-system-headers
@@ -31,7 +31,7 @@ CFLAGS += -O3
 .endif
 .endif
 
-.if !defined(NDEBUG)
+.if defined(DEBUG)
 CFLAGS += -g
 .else
 CFLAGS += -DNDEBUG
