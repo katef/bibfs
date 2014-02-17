@@ -27,12 +27,14 @@ CFLAGS += -Wno-padded # padding is not an error
 CFLAGS += -O0
 .else
 CFLAGS += -ansi -pedantic
-CFLAGS += -O4
+CFLAGS += -O3
 .endif
 .endif
 
 .if !defined(NDEBUG)
 CFLAGS += -g
+.else
+CFLAGS += -DNDEBUG
 .endif
 
 .for src in ${SRC} ${GEN}
