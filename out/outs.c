@@ -6,7 +6,9 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <stdio.h>
+#include <errno.h>
 
 #include <bib/bib.h>
 #include <bib/out.h>
@@ -16,17 +18,22 @@ readall(FILE *f, char *buf, size_t size)
 {
 	size_t n;
 
-	n = 0;
-
 	assert(f != NULL);
 	assert(buf != NULL);
 	assert(size > 0);
 
+	if (size > INT_MAX) {
+		errno = EINVAL;
+		return 0;
+	}
+
+	n = 0;
+
 	while (n < size) {
-		int r;
+		size_t r;
 
 		r = fread(buf + n, 1, size - n, f);
-		if (r == -1) {
+		if (r == 0 && ferror(f)) {
 			return 0;
 		}
 
@@ -68,6 +75,8 @@ bib_outs(const struct bib_entry *e,
 		fclose(f);
 		return NULL;
 	}
+
+	assert(st.st_size >= 0);
 
 	s = malloc(st.st_size + 1);
 	if (s == NULL) {

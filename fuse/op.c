@@ -26,7 +26,7 @@ extern struct bibfs_op op_index;
 extern struct bibfs_op op_field;
 extern struct bibfs_op op_file;
 
-struct {
+static struct {
 	const char *fmt;
 	struct bibfs_op *op;
 } op[] = {
@@ -261,6 +261,10 @@ bibfs_read(const char *path, char *buf, size_t size, off_t offset,
 		return -EINVAL;
 	}
 
+	if (offset > SIZE_MAX) {
+		return -EINVAL;
+	}
+
 	if (-1 == bibfs_reload(b)) {
 		return -errno;
 	}
@@ -287,14 +291,14 @@ bibfs_read(const char *path, char *buf, size_t size, off_t offset,
 }
 
 void
-bibfs_init(struct fuse_operations *op)
+bibfs_init(struct fuse_operations *o)
 {
-	assert(op != NULL);
+	assert(o != NULL);
 
-	op->getattr  = bibfs_getattr;
-	op->readlink = bibfs_readlink;
-	op->readdir  = bibfs_readdir;
-	op->open     = bibfs_open;
-	op->read     = bibfs_read;
+	o->getattr  = bibfs_getattr;
+	o->readlink = bibfs_readlink;
+	o->readdir  = bibfs_readdir;
+	o->open     = bibfs_open;
+	o->read     = bibfs_read;
 }
 

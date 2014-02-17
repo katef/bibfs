@@ -22,7 +22,7 @@
 #include "op.h"
 
 /* TODO: name= from .bib source file */
-const char *notebook =
+static const char *notebook =
 	"[Notebook]\n"
 	"name=Something\n"
 	"version=0.4\n"
@@ -35,6 +35,7 @@ zim_getattr(struct bibfs_state *b,
 	const char *key, const char *name, const char *ext)
 {
 	struct bib_entry *e;
+	off_t z;
 
 	assert(b != NULL);
 	assert(st != NULL);
@@ -48,9 +49,14 @@ zim_getattr(struct bibfs_state *b,
 	}
 
 	if (key == NULL) {
+		z = strlen(notebook);
+		if (z < 0) {
+			return -EINVAL;
+		}
+
 		st->st_mode  = S_IFREG | 0444;
 		st->st_nlink = 1;
-		st->st_size  = strlen(notebook);
+		st->st_size  = z;
 
 		return 0;
 	}
@@ -67,9 +73,14 @@ zim_getattr(struct bibfs_state *b,
 		}
 	}
 
+	z = strlen(e->zim);
+	if (z < 0) {
+		return -EINVAL;
+	}
+
 	st->st_mode  = S_IFREG | 0444;
 	st->st_nlink = 1;
-	st->st_size  = strlen(e->zim);
+	st->st_size  = z;
 
 	return 0;
 }

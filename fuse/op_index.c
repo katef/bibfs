@@ -24,6 +24,7 @@ index_getattr(struct bibfs_state *b, struct stat *st,
 	const char *key, const char *name, const char *ext)
 {
 	struct bib_entry *e;
+	off_t z;
 
 	assert(b != NULL);
 	assert(st != NULL);
@@ -44,9 +45,14 @@ index_getattr(struct bibfs_state *b, struct stat *st,
 		}
 	}
 
+	z = strlen(e->bib);
+	if (z < 0) {
+		return -EINVAL;
+	}
+
 	st->st_mode  = S_IFREG | 0444;
 	st->st_nlink = 1;
-	st->st_size  = strlen(e->bib);
+	st->st_size  = z;
 
 	return 0;
 }

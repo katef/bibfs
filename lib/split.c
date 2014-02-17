@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include <bib/bib.h>
+#include <bib/refactor.h>
 
 #define WHITE " \t\r\n\v\f"
 

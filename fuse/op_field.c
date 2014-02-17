@@ -27,6 +27,7 @@ field_getattr(struct bibfs_state *b,
 	struct bib_entry *e;
 	struct bib_field *f;
 	size_t i;
+	off_t z;
 
 	assert(b != NULL);
 	assert(st != NULL);
@@ -53,9 +54,15 @@ field_getattr(struct bibfs_state *b,
 			return -EBADFD;
 		}
 
+		/* XXX: strlen() of all f->value comma seperated */
+		z = strlen(f->value->text);
+		if (z < 0) {
+			return -EINVAL;
+		}
+
 		st->st_mode  = S_IFREG | 0444;
 		st->st_nlink = 1;
-		st->st_size  = strlen(f->value->text); /* XXX: strlen() of all f->value comma seperated */
+		st->st_size  = z;
 
 		return 0;
 	}

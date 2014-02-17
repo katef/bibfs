@@ -49,6 +49,8 @@
 	#define SAVE_LEXER(tok)  act_state->save = tok;
 	#define RESTORE_LEXER    act_state->type = act_state->save;
 
+	struct bib_entry *bib_parse(FILE *f);
+
 @}, @{
 
 	#include <stdio.h>
