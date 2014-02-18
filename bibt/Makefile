@@ -12,5 +12,3 @@ ${BUILD}/bin/bibt: ${BUILD}/lib/${lib:R}.a
 ${BUILD}/bin/bibt: ${BUILD}/${src:R}.o
 .endfor
 
-bibt/main.c: build/lib/parser.h
-

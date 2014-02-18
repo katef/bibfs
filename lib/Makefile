@@ -1,7 +1,5 @@
 .include "../mk/top.mk"
 
-GEN += lib/parser.c
-
 SRC += lib/lex.c
 SRC += lib/bib.c
 SRC += lib/refactor.c
@@ -10,6 +8,7 @@ SRC += lib/split.c
 SRC += lib/merge.c
 SRC += lib/cull.c
 SRC += lib/free.c
+SRC += lib/parser.c
 
 PARSER += lib/parser.sid
 
@@ -35,7 +34,7 @@ CFLAGS_lib/parser.c += -Wno-sign-conversion
 CFLAGS_lib/parser.c += -Wno-switch-enum
 .endif
 
-.for src in ${SRC:Mlib/*.c} ${SRC:Mout/*.c} ${GEN:Mlib/*.c}
+.for src in ${SRC:Mlib/*.c} ${SRC:Mout/*.c}
 ${BUILD}/lib/libbib.o: ${BUILD}/${src:R}.o
 .endfor
 

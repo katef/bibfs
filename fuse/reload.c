@@ -11,7 +11,7 @@
 #include <bib/free.h>
 #include <bib/refactor.h>
 
-#include "../build/lib/parser.h" /* XXX: needs a formal api */
+#include "../lib/parser.h" /* XXX: needs a formal api */
 
 #include "internal.h"
 
