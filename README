@@ -1,0 +1,28 @@
+bibfs: A FUSE file system for mounting Bibtex files.
+
+To build and install:
+
+ ; pmake -r install
+
+You can override a few things:
+
+ ; CC=clang PREFIX=$HOME pmake -r install
+
+Building depends on:
+
+ * Any BSD make. This includes OpenBSD, FreeBSD and NetBSD make(1)
+   and sjg's portable bmake (also packaged as pmake).
+
+ * The FUSE file system front-end needs the FUSE headers to build,
+   packaged as libfuse-dev for Debian and friends.
+
+ * A C compiler. Any should do, but GCC and clang are best supported.
+
+ * ar, ld, and a bunch of other stuff you probably already have.
+
+To mount a Bibtex file (-d will prevent FUSE from daemonising itself):
+
+ ; bibfs -d -s /path/to/bibliography.bib /mnt
+
+Ideas, comments or bugs: kate@elide.org
+
