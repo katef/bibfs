@@ -9,7 +9,9 @@ install:: all
 clean::
 
 # things to override
-BUILD ?= build
+CC     ?= gcc
+BUILD  ?= build
+PREFIX ?= /usr/local
 
 # layout
 SUBDIR += include/bib

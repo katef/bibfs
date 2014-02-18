@@ -1,6 +1,4 @@
 
-CC ?= gcc
-
 CFLAGS_PIC ?= -fPIC
 
 .for dir in ${INCDIR}

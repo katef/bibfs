@@ -1,6 +1,4 @@
 
-PREFIX  ?= /usr/local
-
 INSTALL ?= install
 
 .for stage in ${STAGE_BUILD} ${STAGE_COPY}
