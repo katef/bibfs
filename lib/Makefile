@@ -35,6 +35,7 @@ CFLAGS_lib/parser.c += -Wno-switch-enum
 .endif
 
 .for src in ${SRC:Mlib/*.c} ${SRC:Mout/*.c}
-${BUILD}/lib/libbib.o: ${BUILD}/${src:R}.o
+${BUILD}/lib/libbib.o:    ${BUILD}/${src:R}.o
+${BUILD}/lib/libbib.opic: ${BUILD}/${src:R}.opic
 .endfor
 

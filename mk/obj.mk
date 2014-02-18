@@ -1,6 +1,8 @@
 
 CC ?= gcc
 
+CFLAGS_PIC ?= -fPIC
+
 .for dir in ${INCDIR}
 CFLAGS += -I ${dir}
 .endfor
@@ -43,6 +45,9 @@ CLEAN += ${BUILD}/${src:R}.o
 
 ${BUILD}/${src:R}.o: ${src}
 	${CC} -o $@ ${CFLAGS} ${CFLAGS_${src}} -c ${.ALLSRC:M*.c}
+
+${BUILD}/${src:R}.opic: ${src}
+	${CC} -o $@ ${CFLAGS_PIC} ${CFLAGS} ${CFLAGS_${src}} -c ${.ALLSRC:M*.c}
 
 .endfor
 
