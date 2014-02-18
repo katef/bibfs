@@ -14,14 +14,6 @@ DFLAGS += -MT ${@:R}.o
 DFLAGS += -ansi -pedantic
 .endif
 
-.for src in ${SRC}
-${BUILD}/${src:R}.mk: ${src}
-.endfor
-
-.for src in ${GEN}
-${BUILD}/${src:R}.mk: ${BUILD}/${src}
-.endfor
-
 # This is worth some explanation.
 #
 # Here we generate dependencies as .mk files, and .include them. But .include
@@ -38,11 +30,11 @@ ${BUILD}/${src:R}.mk: ${BUILD}/${src}
 # would outdate its target, and so would be rebuilt regardless - leaving behind
 # (now correct) generated dependencies for the next run.
 
-.for src in ${SRC} ${GEN}
+.for src in ${SRC}
 
 CLEAN += ${BUILD}/${src:R}.mk
 
-${BUILD}/${src:R}.mk:
+${BUILD}/${src:R}.mk: ${src}
 	${DEP} -o $@ ${DFLAGS} ${DFLAGS_${src}} -c ${.ALLSRC:M*.c}
 
 dep:: ${BUILD}/${src:R}.mk

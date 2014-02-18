@@ -37,20 +37,12 @@ CFLAGS += -g
 CFLAGS += -DNDEBUG
 .endif
 
-.for src in ${SRC} ${GEN}
+.for src in ${SRC}
 
 CLEAN += ${BUILD}/${src:R}.o
 
-${BUILD}/${src:R}.o:
+${BUILD}/${src:R}.o: ${src}
 	${CC} -o $@ ${CFLAGS} ${CFLAGS_${src}} -c ${.ALLSRC:M*.c}
 
-.endfor
-
-.for src in ${SRC}
-${BUILD}/${src:R}.o: ${src}
-.endfor
-
-.for src in ${GEN}
-${BUILD}/${src:R}.o: ${BUILD}/${src}
 .endfor
 
