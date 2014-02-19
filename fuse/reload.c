@@ -14,6 +14,7 @@
 #include "../lib/parser.h" /* XXX: needs a formal api */
 
 #include "internal.h"
+#include "rwlock.h"
 
 int
 bibfs_reload(struct bibfs_state *b)
@@ -23,13 +24,16 @@ bibfs_reload(struct bibfs_state *b)
 	assert(b != NULL);
 	assert(b->path != NULL);
 
+	rwlock_lock(b->rw, RWLOCK_WRITE);
+
 	if (-1 == stat(b->path, &st)) {
+		rwlock_unlock(b->rw);
 		return -1;
 	}
 
 	if (b->f != NULL) {
 		if (st.st_mtime == b->st.st_mtime) {
-			return 0;
+			goto done;
 		}
 
 		(void) fclose(b->f);
@@ -58,6 +62,10 @@ bibfs_reload(struct bibfs_state *b)
 
 	/* TODO: convert to tree or qsort for quick lookup by key */
 
+done:
+
+	rwlock_unlock(b->rw);
+
 	return 0;
 
 error:
@@ -66,6 +74,8 @@ error:
 
 	bib_free_entry(b->e);
 	b->e = NULL;
+
+	rwlock_unlock(b->rw);
 
 	return -1;
 }

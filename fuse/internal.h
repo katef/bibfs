@@ -4,6 +4,7 @@
 struct bibfs_state {
 	const char *prefix;
 	const char *path;
+	struct rwlock *rw;
 	struct stat st;
 	FILE *f;
 	struct bib_entry *e;

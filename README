@@ -22,7 +22,7 @@ Building depends on:
 
 To mount a Bibtex file (-d will prevent FUSE from daemonising itself):
 
- ; bibfs -d -s /path/to/bibliography.bib /mnt
+ ; bibfs -d /path/to/bibliography.bib /mnt
 
 Ideas, comments or bugs: kate@elide.org
 

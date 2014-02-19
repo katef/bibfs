@@ -13,6 +13,7 @@
 #include <bib/debug.h>
 
 #include "internal.h"
+#include "rwlock.h"
 #include "op.h"
 
 unsigned debug;
@@ -117,6 +118,12 @@ main(int argc, char *argv[])
 	}
 
 	bibfs_init(&op);
+
+	b.rw = rwlock_create();
+	if (b.rw == NULL) {
+		perror("rwlock_create");
+		return 1;
+	}
 
 	return fuse_main(args.argc, args.argv, &op, &b);
 

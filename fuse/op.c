@@ -17,6 +17,7 @@
 #include <errno.h>
 
 #include "internal.h"
+#include "rwlock.h"
 #include "op.h"
 
 extern struct bibfs_op op_root;
@@ -100,15 +101,23 @@ bibfs_getattr(const char *path, struct stat *st)
 	ext  = NULL;
 
 	for (i = 0; i < sizeof op / sizeof *op; i++) {
+		int r;
+
 		strcpy(s, path);
 
 		if (!split(s, op[i].fmt, &key, &name, &ext)) {
 			continue;
 		}
 
+		rwlock_lock(b->rw, RWLOCK_READ);
+
 		*st = b->st;
 
-		return op[i].op->getattr(b, st, key, name, ext);
+		r = op[i].op->getattr(b, st, key, name, ext);
+
+		rwlock_unlock(b->rw);
+
+		return r;
 	}
 
 	return -ENOENT;
@@ -141,13 +150,21 @@ bibfs_readlink(const char *path, char *buf, size_t bufsz)
 	ext  = NULL;
 
 	for (i = 0; i < sizeof op / sizeof *op; i++) {
+		int r;
+
 		strcpy(s, path);
 
 		if (!split(s, op[i].fmt, &key, &name, &ext)) {
 			continue;
 		}
 
-		return op[i].op->readlink(b, buf, bufsz, key, name, ext);
+		rwlock_lock(b->rw, RWLOCK_READ);
+
+		r = op[i].op->readlink(b, buf, bufsz, key, name, ext);
+
+		rwlock_unlock(b->rw);
+
+		return r;
 	}
 
 	return -ENOENT;
@@ -182,6 +199,8 @@ bibfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
 	ext  = NULL;
 
 	for (i = 0; i < sizeof op / sizeof *op; i++) {
+		int r;
+
 		strcpy(s, path);
 
 		if (!split(s, op[i].fmt, &key, &name, &ext)) {
@@ -196,7 +215,13 @@ bibfs_readdir(const char *path, void *buf, fuse_fill_dir_t fill,
 			return -ENOBUFS;
 		}
 
-		return op[i].op->readdir(b, buf, fill, offset, fi, key, name, ext);
+		rwlock_lock(b->rw, RWLOCK_READ);
+
+		r = op[i].op->readdir(b, buf, fill, offset, fi, key, name, ext);
+
+		rwlock_unlock(b->rw);
+
+		return r;
 	}
 
 	return -ENOENT;
@@ -229,13 +254,21 @@ bibfs_open(const char *path, struct fuse_file_info *fi)
 	ext  = NULL;
 
 	for (i = 0; i < sizeof op / sizeof *op; i++) {
+		int r;
+
 		strcpy(s, path);
 
 		if (!split(s, op[i].fmt, &key, &name, &ext)) {
 			continue;
 		}
 
-		return op[i].op->open(b, fi, key, name, ext);
+		rwlock_lock(b->rw, RWLOCK_READ);
+
+		r = op[i].op->open(b, fi, key, name, ext);
+
+		rwlock_unlock(b->rw);
+
+		return r;
 	}
 
 	return -ENOENT;
@@ -278,13 +311,21 @@ bibfs_read(const char *path, char *buf, size_t size, off_t offset,
 	ext  = NULL;
 
 	for (i = 0; i < sizeof op / sizeof *op; i++) {
+		int r;
+
 		strcpy(s, path);
 
 		if (!split(s, op[i].fmt, &key, &name, &ext)) {
 			continue;
 		}
 
-		return op[i].op->read(b, buf, size, offset, fi, key, name, ext);
+		rwlock_lock(b->rw, RWLOCK_READ);
+
+		r = op[i].op->read(b, buf, size, offset, fi, key, name, ext);
+
+		rwlock_unlock(b->rw);
+
+		return r;
 	}
 
 	return -ENOENT;
