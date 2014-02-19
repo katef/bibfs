@@ -4,6 +4,7 @@ SRC += fuse/main.c
 SRC += fuse/filename.c
 SRC += fuse/reload.c
 SRC += fuse/sread.c
+SRC += fuse/rwlock.c
 
 SRC += fuse/op.c
 SRC += fuse/op_root.c
