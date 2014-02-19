@@ -45,11 +45,13 @@ rwlock_create(void)
 
 	r = pthread_rwlockattr_init(&attr);
 	if (0 != r) {
+		errno = r;
 		return NULL;
 	}
 
 	r = pthread_rwlock_init(&rw->rwlock, &attr);
 	if (0 != r) {
+		errno = r;
 		goto error;
 	}
 
@@ -96,6 +98,7 @@ rwlock_lock(struct rwlock *rw, enum rwlock_type type)
 	}
 
 	if (0 != r) {
+		errno = r;
 		perror("pthread_rwlock_wrlock");
 		abort();
 	}
@@ -110,6 +113,7 @@ rwlock_unlock(struct rwlock *rw)
 
 	r = pthread_rwlock_unlock(&rw->rwlock);
 	if (0 != r) {
+		errno = r;
 		perror("pthread_rwlock_unlock");
 		abort();
 	}
