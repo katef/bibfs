@@ -49,6 +49,13 @@ rwlock_create(void)
 		return NULL;
 	}
 
+#ifndef NDEBUG
+	/*
+	 * If there were an equivalent to PTHREAD_MUTEX_ERRORCHECK for
+	 * pthread_rwlockattr_t, we would set it here.
+	 */
+#endif
+
 	r = pthread_rwlock_init(&rw->rwlock, &attr);
 	if (0 != r) {
 		errno = r;
