@@ -31,11 +31,21 @@ bibfs_reload(struct bibfs_state *b)
 		return -1;
 	}
 
+	rwlock_unlock(b->rw);
+
 	if (b->f != NULL) {
+		rwlock_lock(b->rw, RWLOCK_READ);
+
 		if (st.st_mtime == b->st.st_mtime) {
 			goto done;
 		}
 
+		rwlock_unlock(b->rw);
+	}
+
+	rwlock_lock(b->rw, RWLOCK_WRITE);
+
+	if (b->f != NULL) {
 		(void) fclose(b->f);
 	}
 
