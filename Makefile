@@ -25,7 +25,7 @@ INCDIR += include
 TEST += /usr/share/texlive/texmf-dist/bibtex/bib/base/xampl.bib
 
 test:: ${BUILD}/bin/bibfs ${TEST}
-	${BUILD}/bin/bibfs -da -e json < ${.ALLSRC:M*.bib}
+	${BUILD}/bin/bibt -da -e json ${.ALLSRC:M*.bib}
 
 .include <mk/subdir.mk>
 .include <mk/sid.mk>
