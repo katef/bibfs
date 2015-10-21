@@ -46,9 +46,10 @@ static void
 		const char *name;
 		void (*f)(FILE *, const struct bib_entry *, int);
 	} a[] = {
-		{ "bibtex", out_bibtex },
-		{ "json",   out_json   },
-		{ "zim",    out_zim    }
+		{ "bibtex", out_bibtex  },
+		{ "json",   out_json    },
+		{ "xml",    out_xml     },
+		{ "zim",    out_zim     }
 	};
 
 	for (i = 0; i < sizeof a / sizeof *a; i++) {
@@ -134,7 +135,7 @@ main(int argc, char *argv[])
 
 usage:
 
-	fprintf(stderr, "usage: bibfs [-d ablc] [-e json|bibtex] <file.bib>\n");
+	fprintf(stderr, "usage: bibfs [-d ablc] [-e json|bibtex|xml|zim] <file.bib>\n");
 
 	return 1;
 }

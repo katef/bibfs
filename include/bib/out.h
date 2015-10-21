@@ -7,6 +7,7 @@ void out_bibtex(FILE *f, const struct bib_entry *e, int all);
 void out_docbook(FILE *f, const struct bib_entry *e, int all);
 void out_zimtex(FILE *f, const struct bib_entry *e, int all);
 void out_json(FILE *f, const struct bib_entry *e, int all);
+void out_xml(FILE *f, const struct bib_entry *e, int all);
 void out_zim(FILE *f, const struct bib_entry *e, int all);
 
 char *

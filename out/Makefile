@@ -2,6 +2,7 @@
 
 SRC += out/bibtex.c
 SRC += out/json.c
+SRC += out/xml.c
 SRC += out/zim.c
 
 SRC += out/outs.c
