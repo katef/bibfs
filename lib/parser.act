@@ -141,7 +141,6 @@
 		for (p = @s; *p != '\0'; p++) {
 			*p = tolower((unsigned char) *p);
 		}
-fprintf(stderr, "tolower:'%s' s=%p\n", @s, (void *) @s);
 	@};
 
 	<new-field>: (n :string, v :string) -> (f :field) = @{
