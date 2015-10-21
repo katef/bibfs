@@ -24,7 +24,9 @@
 
 	<free>:   (:string) -> ();
 	<strcat>: (:string, :string) -> (:string);
-	<lookup>: (:string) -> (:string);
+
+	<lookup>:  (:string) -> (:string);
+	<tolower>: (:string) -> ();
 
 	<new-field>: (:string, :string) -> (:field);
 	<add-field>: (:field, :field) -> (:field);
@@ -81,6 +83,7 @@
 		entry: () -> (e :entry) = {
 			at;
 			t = word; /* type */
+			<tolower>(t);
 			obrace;
 			k = word; /* key */
 			comma;

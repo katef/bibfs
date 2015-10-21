@@ -20,15 +20,6 @@ stolower(char *s)
 }
 
 static void
-stotitle(char *s)
-{
-	assert(s != NULL);
-
-	stolower(s);
-	*s = toupper((unsigned char) *s);
-}
-
-static void
 normalise_space(char *s)
 {
 	char *p;
@@ -154,7 +145,6 @@ bib_refactor(struct bib_entry *e)
 	for (p = e; p != NULL; p = p->next) {
 		/* TODO: unescape e */
 
-		stotitle(p->type);
 		normalise_keyname(p->key);
 
 		if (-1 == refactor_entry(p)) {

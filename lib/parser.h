@@ -9,7 +9,7 @@
 
 /* BEGINNING OF HEADER */
 
-#line 66 "lib/parser.act"
+#line 67 "lib/parser.act"
 
 
 	#include <stdio.h>
@@ -29,7 +29,7 @@
 extern void p_bib(lex_state, act_state, entry *);
 /* BEGINNING OF TRAILER */
 
-#line 264 "lib/parser.act"
+#line 274 "lib/parser.act"
 
 
 #line 36 "lib/parser.h"

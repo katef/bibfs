@@ -26,6 +26,7 @@
 	#include <string.h>
 	#include <stdlib.h>
 	#include <stdio.h>
+	#include <ctype.h>
 
 	#include <bib/debug.h>
 	#include <bib/lex.h>
@@ -132,6 +133,15 @@
 	<lookup>: (s :string) -> (v :string) = @{
 		/* TODO: populate variables from "String" constructs */
 		@v = @s;
+	@};
+
+	<tolower>: (s :string) -> () = @{
+		char *p;
+
+		for (p = @s; *p != '\0'; p++) {
+			*p = tolower((unsigned char) *p);
+		}
+fprintf(stderr, "tolower:'%s' s=%p\n", @s, (void *) @s);
 	@};
 
 	<new-field>: (n :string, v :string) -> (f :field) = @{
