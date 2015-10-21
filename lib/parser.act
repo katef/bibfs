@@ -85,6 +85,24 @@
 		@s[n] = '\0';
 	@};
 
+	word: () -> (s :string) = @{
+		size_t n;
+
+		assert(act_state->t.s != NULL);
+		assert(act_state->t.e >= act_state->t.s);
+
+		n = act_state->t.e - act_state->t.s;
+
+		@s = malloc(n + 1);
+		if (@s == NULL) {
+			perror("malloc");
+			exit(EXIT_FAILURE); /* XXX: not really what i want to do */
+		}
+
+		memcpy(@s, act_state->t.s, n);
+		@s[n] = '\0';
+	@};
+
 %actions%
 
 	<free>: (s :string) -> () = @{
@@ -109,6 +127,11 @@
 		}
 
 		strcpy(@s + za, @b);
+	@};
+
+	<lookup>: (s :string) -> (v :string) = @{
+		/* TODO: populate variables from "String" constructs */
+		@v = @s;
 	@};
 
 	<new-field>: (n :string, v :string) -> (f :field) = @{

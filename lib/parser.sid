@@ -17,12 +17,14 @@
 	obrace;
 	cbrace;
 
-	str: () -> (:string);
+	str:  () -> (:string);
+	word: () -> (:string);
 
 %productions%
 
 	<free>:   (:string) -> ();
 	<strcat>: (:string, :string) -> (:string);
+	<lookup>: (:string) -> (:string);
 
 	<new-field>: (:string, :string) -> (:field);
 	<add-field>: (:field, :field) -> (:field);
@@ -32,19 +34,26 @@
 	<add-entry>: (:entry, :entry) -> (:entry);
 	<null-entry>: () -> (:entry);
 
+	str-or-var: () -> (v :string) = {
+		v = str;
+	||
+		w = word;
+		v = <lookup>(w);
+	};
+
 	cats: () -> (v :string) = {
-		a = str;
+		a = str-or-var;
 		cat;
 		b = cats;
 		v = <strcat>(a, b);
 	||
-		v = str;
+		v = str-or-var;
 	};
 
 	fields: () -> (f :field) [
 
 		field: () -> (f :field) = {
-			n = str; /* name */
+			n = word; /* name */
 			equ;
 			v = cats; /* value */
 
@@ -71,9 +80,9 @@
 
 		entry: () -> (e :entry) = {
 			at;
-			t = str; /* type */
+			t = word; /* type */
 			obrace;
-			k = str; /* key */
+			k = word; /* key */
 			comma;
 
 			f = fields;

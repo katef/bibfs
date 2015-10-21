@@ -115,7 +115,7 @@ zone_main(struct lex_state *l, const char **p, const char **s, const char **e)
 		*s = *p;
 		*p += strcspn(*p, WHITE "@%=,{}\"");
 		*e = *p;
-		return tok_str;
+		return isalpha((unsigned char **) **s) ? tok_word: tok_str;
 	}
 }
 
