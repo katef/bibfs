@@ -80,7 +80,7 @@ out_json(FILE *f, const struct bib_entry *e, int all)
 	fprintf(f, "[\n");
 
 	for (p = e; p != NULL; p = p->next) {
-		out_entry(f, e);
+		out_entry(f, p);
 		fprintf(f, "%s\n", p->next ? ",\n" : "");
 	}
 

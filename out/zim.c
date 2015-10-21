@@ -186,7 +186,7 @@ out_zim(FILE *f, const struct bib_entry *e, int all)
 	}
 
 	for (p = e; p != NULL; p = p->next) {
-		out_entry(f, e);
+		out_entry(f, p);
 		fprintf(f, "\n");
 	}
 }

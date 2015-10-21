@@ -83,7 +83,7 @@ out_bibtex(FILE *f, const struct bib_entry *e, int all)
 	}
 
 	for (p = e; p != NULL; p = p->next) {
-		out_bibtex_entry(f, e, NULL);
+		out_bibtex_entry(f, p, NULL);
 	}
 }
 
