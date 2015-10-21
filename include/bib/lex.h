@@ -10,6 +10,7 @@ enum lex_type {
 	tok_equ    = '=',
 	tok_comma  = ',',
 	tok_at     = '@',
+	tok_cat    = '#',
 	tok_obrace = '{',
 	tok_cbrace = '}'
 };

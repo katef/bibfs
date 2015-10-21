@@ -93,6 +93,24 @@
 		free(@s);
 	@};
 
+	<strcat>: (a :string, b :string) -> (s :string) = @{
+		size_t za, zb;
+
+		assert(@a != NULL);
+		assert(@b != NULL);
+
+		za = strlen(@a);
+		zb = strlen(@b);
+
+		@s = realloc(@a, za + zb + 1);
+		if (@s == NULL) {
+			perror("realloc");
+			@!;
+		}
+
+		strcpy(@s + za, @b);
+	@};
+
 	<new-field>: (n :string, v :string) -> (f :field) = @{
 		struct bib_value *v;
 

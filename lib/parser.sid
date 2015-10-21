@@ -13,6 +13,7 @@
 	equ;
 	comma;
 	at;
+	cat;
 	obrace;
 	cbrace;
 
@@ -20,7 +21,8 @@
 
 %productions%
 
-	<free>: (:string) -> ();
+	<free>:   (:string) -> ();
+	<strcat>: (:string, :string) -> (:string);
 
 	<new-field>: (:string, :string) -> (:field);
 	<add-field>: (:field, :field) -> (:field);
@@ -30,12 +32,21 @@
 	<add-entry>: (:entry, :entry) -> (:entry);
 	<null-entry>: () -> (:entry);
 
+	cats: () -> (v :string) = {
+		a = str;
+		cat;
+		b = cats;
+		v = <strcat>(a, b);
+	||
+		v = str;
+	};
+
 	fields: () -> (f :field) [
 
 		field: () -> (f :field) = {
 			n = str; /* name */
 			equ;
-			v = str; /* value */
+			v = cats; /* value */
 
 			f = <new-field>(n, v);
 
