@@ -56,6 +56,7 @@
 
 		field: () -> (f :field) = {
 			n = word; /* name */
+			<tolower>(n);
 			equ;
 			v = cats; /* value */
 
