@@ -226,6 +226,10 @@
 		}
 	@};
 
+	<err-syntax>: () -> () = @{
+		fprintf(stderr, "syntax error\n");
+	@};
+
 %trailer% @{
 
 	struct bib_entry *bib_parse(FILE *f) {

@@ -36,6 +36,8 @@
 	<add-entry>: (:entry, :entry) -> (:entry);
 	<null-entry>: () -> (:entry);
 
+	<err-syntax>;
+
 	str-or-var: () -> (v :string) = {
 		v = str;
 	||
@@ -118,6 +120,9 @@
 			e = <null-entry>;
 		};
 		eof;
+	##
+		<err-syntax>;
+		e = <null-entry>;
 	};
 
 %entry%
