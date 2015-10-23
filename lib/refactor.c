@@ -41,6 +41,39 @@ normalise_space(char *s)
 }
 
 static void
+normalise_titlecase(char *s)
+{
+	char *p, *q;
+	int depth;
+
+	depth = 0;
+
+	for (p = s, q = s; *p != '\0'; p++) {
+		if (*p == '{') {
+			depth++;
+			continue;
+		}
+
+		if (*p == '}') {
+			depth--;
+			continue;
+		}
+
+		if (p == s) {
+			*q = toupper(*p);
+		} else if (depth == 0) {
+			*q = tolower(*p);
+		} else {
+			*q = *p;
+		}
+
+		q++;
+	}
+
+	*q = '\0';
+}
+
+static void
 normalise_file(const struct bib_field *f)
 {
 	struct bib_value *v;
@@ -84,6 +117,7 @@ refactor_entry(struct bib_entry *e)
 
 			for (v = p->value; v != NULL; v = v->next) {
 				normalise_space(v->text);
+				normalise_titlecase(v->text);
 			}
 		}
 
