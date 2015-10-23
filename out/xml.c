@@ -43,7 +43,7 @@ out_field(FILE *f, const struct bib_field *q)
 
 	for (p = q; p != NULL; p = p->next) {
 		fprintf(f, "    <field name='%s'>\n", p->name);
-		out_values(f, p->value, out_str, ", ");
+		out_values(f, p->value, out_str, "");
 		fprintf(f, "    </field>\n");
 	}
 }
