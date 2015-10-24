@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include <bib/bib.h>
+#include <bib/tex.h>
 #include <bib/refactor.h>
 
 #define WHITE " \t\r\n\v\f"
@@ -25,7 +26,7 @@ bib_split(struct bib_field *f, const char *delim)
 	for (v = f->value; v != NULL; v = v->next) {
 		s = v->text;
 
-		s = strstr(s, delim);
+		s = tex_delim(s, delim);
 		if (s == NULL) {
 			continue;
 		}
