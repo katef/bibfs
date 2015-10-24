@@ -40,12 +40,14 @@ tex_escape(char *dst, const char *src, int normalisecase)
 	const char *p;
 	char *q;
 	int depth;
+	int maths;
 	size_t i;
 
 	assert(src != NULL);
 	assert(dst != NULL);
 
 	depth = 0;
+	maths = 0;
 
 	p = src;
 	q = dst;
@@ -62,7 +64,12 @@ tex_escape(char *dst, const char *src, int normalisecase)
 		if (*p == '{') { depth++; p++; continue; }
 		if (*p == '}') { depth--; p++; continue; }
 
-		/* TODO: state for $$ math mode */
+		if (*p == '$') {
+			maths = !maths;
+			*q++ = maths ? '\x02' : '\x03';
+			p++;
+			continue;
+		}
 
 		for (i = 0; i < sizeof a / sizeof *a; i++) {
 			if (0 == strncmp(p, a[i].from, strlen(a[i].from))) {
@@ -103,20 +110,26 @@ tex_delim(const char *s, const char *delim)
 {
 	const char *p;
 	int depth;
+	int maths;
 	size_t i;
 
 	assert(s != NULL);
 	assert(delim != NULL);
 
 	depth = 0;
+	maths = 0;
 
 	p = s;
 
 	while (*p != '\0') {
 		if (*p == '{') { depth++; p++; continue; }
 		if (*p == '}') { depth--; p++; continue; }
-		if (*p == '$') { depth++; p++; continue; }
-		if (*p == '$') { depth--; p++; continue; }
+
+		if (*p == '$') {
+			maths = !maths;
+			p++;
+			continue;
+		}
 
 		for (i = 0; i < sizeof a / sizeof *a; i++) {
 			if (0 == strncmp(p, a[i].from, strlen(a[i].from))) {
@@ -129,7 +142,7 @@ tex_delim(const char *s, const char *delim)
 			continue;
 		}
 
-		if (depth == 0) {
+		if (depth == 0 && maths == 0) {
 			if (0 == strncmp(p, delim, strlen(delim))) {
 				return (char *) p;
 			}
