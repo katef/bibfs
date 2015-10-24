@@ -131,7 +131,7 @@ tex_delim(const char *s, const char *delim)
 
 		if (depth == 0) {
 			if (0 == strncmp(p, delim, strlen(delim))) {
-				return p;
+				return (char *) p;
 			}
 		}
 
