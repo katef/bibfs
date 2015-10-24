@@ -26,6 +26,9 @@ out_str(FILE *f, const char *s)
 		case '\"': fputs("&#34;", f); continue;
 		case '\'': fputs("&#39;", f); continue;
 
+		case '\x02': fputs("<texmath>",  f); continue;
+		case '\x03': fputs("</texmath>", f); continue;
+
 		default:
 			putc(*p, f);
 		}
