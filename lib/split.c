@@ -36,7 +36,7 @@ bib_split(struct bib_field *f, const char *delim)
 
 		s += strspn(s, WHITE);
 
-		w = bib_new_value(s);
+		w = bib_new_value(s, 0);
 		if (w == NULL) {
 			return -1;
 		}

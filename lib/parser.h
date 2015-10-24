@@ -29,7 +29,7 @@
 extern void p_bib(lex_state, act_state, entry *);
 /* BEGINNING OF TRAILER */
 
-#line 277 "lib/parser.act"
+#line 280 "lib/parser.act"
 
 
 #line 36 "lib/parser.h"

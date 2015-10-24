@@ -27,7 +27,7 @@ struct bib_entry {
 };
 
 struct bib_value *
-bib_new_value(char *text);
+bib_new_value(char *text, int normalisecase);
 
 struct bib_field *
 bib_new_field(char *name, struct bib_value *value);

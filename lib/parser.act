@@ -145,11 +145,14 @@
 
 	<new-field>: (n :string, v :string) -> (f :field) = @{
 		struct bib_value *v;
+		int normalisecase;
 
 		assert(@n != NULL);
 		assert(@v != NULL);
 
-		v = bib_new_value(@v);
+		normalisecase = (0 == strcmp(@n, "title"));
+
+		v = bib_new_value(@v, normalisecase);
 		if (v == NULL) {
 			perror("bib_new_value");
 			@!;

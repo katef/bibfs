@@ -3,21 +3,33 @@
 #include <stdlib.h>
 
 #include <bib/bib.h>
+#include <bib/tex.h>
+
+/*
+ * Maximum leeway for expanding out TeX escapes to utf8 sequences.
+ * The worst case here is one byte in TeX to several bytes utf8.
+ */
+#define UTF8 3
 
 struct bib_value *
-bib_new_value(char *text)
+bib_new_value(char *text, int normalisecase)
 {
-	struct bib_value *v;
+	struct bib_value *v, *w;
 
-	v = malloc(sizeof *v + strlen(text) + 1);
+	v = malloc(sizeof *v + strlen(text) * UTF8 + 1);
 	if (v == NULL) {
 		return NULL;
 	}
 
-	v->text = strcpy((char *) v + sizeof *v, text);
+	v->text = tex_escape((char *) v + sizeof *v, text, normalisecase);
 	v->next = NULL;
 
-	return v;
+	w = realloc(v, sizeof *v + strlen(v->text) + 1);
+	if (w == NULL) {
+		return v;
+	}
+
+	return w;
 }
 
 struct bib_field *
