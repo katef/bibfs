@@ -5,6 +5,8 @@
 #include <bib/bib.h>
 #include <bib/tex.h>
 
+#define WHITE " \n\t\r\v\f"
+
 char *
 tex_escape(char *dst, const char *src, int normalisecase)
 {
@@ -49,6 +51,14 @@ tex_escape(char *dst, const char *src, int normalisecase)
 	q = dst;
 
 	while (*p != '\0') {
+		if (isspace((unsigned char) *p)) {
+			p += strspn(p, WHITE);
+			if (q != dst && *p != '\0') {
+				*q++ = ' ';
+			}
+			continue;
+		}
+
 		if (*p == '{') {
 			depth++;
 			p++;
@@ -74,7 +84,7 @@ tex_escape(char *dst, const char *src, int normalisecase)
 
 		if (i == sizeof a / sizeof *a) {
 			if (normalisecase) {
-				if (p == src) {
+				if (q == dst) {
 					*q = toupper(*p);
 				} else if (depth == 0) {
 					*q = tolower(*p);
