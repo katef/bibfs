@@ -34,6 +34,12 @@ static const struct {
 	{ "\\\"u", "\xC3\xBC" }
 };
 
+static int
+xisterm(char c)
+{
+	return !!strchr(":.!", c);
+}
+
 char *
 tex_escape(char *dst, const char *src, int normalisecase)
 {
@@ -87,7 +93,7 @@ tex_escape(char *dst, const char *src, int normalisecase)
 		if (normalisecase) {
 			if (q == dst) {
 				*q = toupper(*p);
-			} else if (q >= dst + 2 && q[-2] == ':' && q[-1] == ' ') {
+			} else if (q >= dst + 2 && xisterm(q[-2]) && q[-1] == ' ') {
 				*q = toupper(*p);
 			} else if (depth == 0) {
 				*q = tolower(*p);
