@@ -90,7 +90,7 @@ tex_escape(char *dst, const char *src, int normalisecase)
 			continue;
 		}
 
-		if (normalisecase) {
+		if (normalisecase && !maths) {
 			if (q == dst) {
 				*q = toupper(*p);
 			} else if (q >= dst + 2 && xisterm(q[-2]) && q[-1] == ' ') {
