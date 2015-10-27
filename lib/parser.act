@@ -148,13 +148,33 @@
 		struct bib_value *v;
 		int normalisecase;
 		const char *delim;
+		size_t i;
+
+		static const struct {
+			const char *name;
+			int normalisecase;
+			const char *delim;
+		} a[] = {
+			{ "file",   0, ";"     },
+			{ "tags",   0, ","     },
+			{ "isbn",   0, ","     },
+			{ "author", 0, " and " },
+			{ "title",  1, NULL    }
+		};
 
 		assert(@n != NULL);
 		assert(@v != NULL);
 
-		/* TODO: keep in an array of structs, lookup per field name */
-		normalisecase = (0 == strcmp(@n, "title"));
-		delim         = (0 == strcmp(@n, "author") ? " and " : NULL); /* XXX */
+		normalisecase = 0;
+		delim         = NULL;
+
+		for (i = 0; i < sizeof a / sizeof *a; i++) {
+			if (0 == strcmp(@n, a[i].name)) {
+				normalisecase = a[i].normalisecase;
+				delim         = a[i].delim;
+				break;
+			}
+		}
 
 		{
 			char *s, *d;

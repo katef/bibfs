@@ -98,7 +98,7 @@ p_entries(lex_state lex_state, act_state act_state, entry *ZOe)
 					}
 					/* BEGINNING OF ACTION: add-entry */
 					{
-#line 239 "lib/parser.act"
+#line 253 "lib/parser.act"
 
 		assert((ZIa)->next == NULL);
 
@@ -255,7 +255,7 @@ p_entries_C_Centry(lex_state lex_state, act_state act_state, entry *ZOe)
 		ADVANCE_LEXER;
 		/* BEGINNING OF ACTION: new-entry */
 		{
-#line 223 "lib/parser.act"
+#line 237 "lib/parser.act"
 
 		assert((ZIt) != NULL);
 		assert((ZIk) != NULL);
@@ -345,7 +345,7 @@ p_bib(lex_state lex_state, act_state act_state, entry *ZOe)
 				{
 					/* BEGINNING OF ACTION: null-entry */
 					{
-#line 251 "lib/parser.act"
+#line 265 "lib/parser.act"
 
 		(ZIe) = NULL;
 
@@ -375,7 +375,7 @@ ZL1:;
 	{
 		/* BEGINNING OF ACTION: err-syntax */
 		{
-#line 261 "lib/parser.act"
+#line 275 "lib/parser.act"
 
 		fprintf(stderr, "syntax error\n");
 	
@@ -384,7 +384,7 @@ ZL1:;
 		/* END OF ACTION: err-syntax */
 		/* BEGINNING OF ACTION: null-entry */
 		{
-#line 251 "lib/parser.act"
+#line 265 "lib/parser.act"
 
 		(ZIe) = NULL;
 
@@ -614,24 +614,38 @@ p_fields_C_Cfield(lex_state lex_state, act_state act_state, field *ZOf)
 		}
 		/* BEGINNING OF ACTION: new-field */
 		{
-#line 152 "lib/parser.act"
+#line 165 "lib/parser.act"
 
 		struct bib_value *v;
 		int normalisecase;
 		const char *delim;
+		size_t i;
+
+		static const struct {
+			const char *name;
+			int normalisecase;
+			const char *delim;
+		} a[] = {
+			{ "file",   0, ";"     },
+			{ "tags",   0, ","     },
+			{ "isbn",   0, ","     },
+			{ "author", 0, " and " },
+			{ "title",  1, NULL    }
+		};
 
 		assert((ZIn) != NULL);
 		assert((ZIv) != NULL);
 
-		/* TODO: keep in an array of structs, lookup per field name */
-		normalisecase = (0 == strcmp((ZIn), "title"));
-		delim         = (0 == strcmp((ZIn), "author") ? " and " : NULL); /* XXX */
-/*
-file ";"
-tags ","
-isbn ","
-author " and "
-*/
+		normalisecase = 0;
+		delim         = NULL;
+
+		for (i = 0; i < sizeof a / sizeof *a; i++) {
+			if (0 == strcmp((ZIn), a[i].name)) {
+				normalisecase = a[i].normalisecase;
+				delim         = a[i].delim;
+				break;
+			}
+		}
 
 		{
 			char *s, *d;
@@ -668,7 +682,7 @@ author " and "
 				(ZIn), (ZIv), (void *) v, (void *) (ZIf));
 		}
 	
-#line 672 "lib/parser.c"
+#line 686 "lib/parser.c"
 		}
 		/* END OF ACTION: new-field */
 		/* BEGINNING OF ACTION: free */
@@ -679,7 +693,7 @@ author " and "
 
 		free((ZIn));
 	
-#line 683 "lib/parser.c"
+#line 697 "lib/parser.c"
 		}
 		/* END OF ACTION: free */
 		/* BEGINNING OF ACTION: free */
@@ -690,7 +704,7 @@ author " and "
 
 		free((ZIv));
 	
-#line 694 "lib/parser.c"
+#line 708 "lib/parser.c"
 		}
 		/* END OF ACTION: free */
 	}
@@ -728,7 +742,7 @@ p_fields(lex_state lex_state, act_state act_state, field *ZOf)
 						}
 						/* BEGINNING OF ACTION: add-field */
 						{
-#line 202 "lib/parser.act"
+#line 216 "lib/parser.act"
 
 		assert((ZIa)->next == NULL);
 
@@ -740,7 +754,7 @@ p_fields(lex_state lex_state, act_state act_state, field *ZOf)
 				(void *) (ZIa), (void *) (ZIb), (void *) (ZIf));
 		}
 	
-#line 744 "lib/parser.c"
+#line 758 "lib/parser.c"
 						}
 						/* END OF ACTION: add-field */
 					}
@@ -762,7 +776,7 @@ p_fields(lex_state lex_state, act_state act_state, field *ZOf)
 		{
 			/* BEGINNING OF ACTION: null-field */
 			{
-#line 214 "lib/parser.act"
+#line 228 "lib/parser.act"
 
 		(ZIf) = NULL;
 
@@ -771,7 +785,7 @@ p_fields(lex_state lex_state, act_state act_state, field *ZOf)
 				(void *) (ZIf));
 		}
 	
-#line 775 "lib/parser.c"
+#line 789 "lib/parser.c"
 			}
 			/* END OF ACTION: null-field */
 		}
@@ -789,7 +803,7 @@ ZL0:;
 
 /* BEGINNING OF TRAILER */
 
-#line 305 "lib/parser.act"
+#line 319 "lib/parser.act"
 
 
 	struct bib_entry *bib_parse(FILE *f) {
@@ -832,6 +846,6 @@ ZL0:;
 		return e;
 	}
 
-#line 836 "lib/parser.c"
+#line 850 "lib/parser.c"
 
 /* END OF FILE */
