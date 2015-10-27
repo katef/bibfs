@@ -7,17 +7,6 @@
 #include <bib/refactor.h>
 
 static void
-stolower(char *s)
-{
-	assert(s != NULL);
-
-	while (*s != '\0') {
-		*s = tolower((unsigned char) *s);
-		s++;
-	}
-}
-
-static void
 normalise_file(const struct bib_field *f)
 {
 	struct bib_value *v;
@@ -53,8 +42,6 @@ refactor_entry(struct bib_entry *e)
 	struct bib_field *p;
 
 	for (p = e->field; p != NULL; p = p->next) {
-		stolower(p->name);
-
 		bib_merge(p);
 
 		if (0 == strcmp(p->name, "file")) {
