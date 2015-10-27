@@ -67,6 +67,12 @@ refactor_entry(struct bib_entry *e)
 			}
 		}
 
+		if (0 == strcmp(p->name, "isbn")) {
+			if (-1 == bib_split(p, ",")) {
+				return -1;
+			}
+		}
+
 		if (0 == strcmp(p->name, "author")) {
 			if (-1 == bib_split(p, " and ")) {
 				return -1;
