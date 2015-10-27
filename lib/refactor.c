@@ -55,34 +55,6 @@ refactor_entry(struct bib_entry *e)
 	for (p = e->field; p != NULL; p = p->next) {
 		stolower(p->name);
 
-		if (0 == strcmp(p->name, "file")) {
-			if (-1 == bib_split(p, ";")) {
-				return -1;
-			}
-		}
-
-		if (0 == strcmp(p->name, "tags")) {
-			if (-1 == bib_split(p, ",")) {
-				return -1;
-			}
-		}
-
-		if (0 == strcmp(p->name, "isbn")) {
-			if (-1 == bib_split(p, ",")) {
-				return -1;
-			}
-		}
-
-		if (0 == strcmp(p->name, "author")) {
-			if (-1 == bib_split(p, " and ")) {
-				return -1;
-			}
-
-			if (-1 == bib_split(p, ";")) {
-				return -1;
-			}
-		}
-
 		bib_merge(p);
 
 		if (0 == strcmp(p->name, "file")) {

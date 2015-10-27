@@ -31,6 +31,7 @@
 	#include <bib/debug.h>
 	#include <bib/lex.h>
 	#include <bib/bib.h>
+	#include <bib/tex.h>
 
 	typedef char *             string;
 	typedef struct bib_field * field;
@@ -146,16 +147,36 @@
 	<new-field>: (n :string, v :string) -> (f :field) = @{
 		struct bib_value *v;
 		int normalisecase;
+		const char *delim;
 
 		assert(@n != NULL);
 		assert(@v != NULL);
 
+		/* TODO: keep in an array of structs, lookup per field name */
 		normalisecase = (0 == strcmp(@n, "title"));
+		delim         = (0 == strcmp(@n, "author") ? " and " : NULL); /* XXX */
 
-		v = bib_new_value(@v, normalisecase);
-		if (v == NULL) {
-			perror("bib_new_value");
-			@!;
+		{
+			char *s, *d;
+			struct bib_value **tail;
+
+			tail = &v;
+
+			for (s = @v; s != NULL; s = d) {
+				d = tex_delim(s, delim);
+				if (d != NULL) {
+					*d = '\0';
+					d += strlen(delim);
+				}
+
+				*tail = bib_new_value(s, normalisecase);
+				if (*tail == NULL) {
+					perror("bib_new_value");
+					@!;
+				}
+
+				tail = &(*tail)->next;
+			}
 		}
 
 		@f = bib_new_field(@n, v);

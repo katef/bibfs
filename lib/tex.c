@@ -122,7 +122,10 @@ tex_delim(const char *s, const char *delim)
 	size_t i;
 
 	assert(s != NULL);
-	assert(delim != NULL);
+
+	if (delim == NULL) {
+		return NULL;
+	}
 
 	depth = 0;
 	maths = 0;
