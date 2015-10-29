@@ -9,7 +9,7 @@
  * Maximum leeway for expanding out TeX escapes to utf8 sequences.
  * The worst case here is one byte in TeX to several bytes utf8.
  */
-#define UTF8 3
+#define UTF8 4
 
 struct bib_value *
 bib_new_value(char *text, int normalisecase)
