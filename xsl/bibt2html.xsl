@@ -144,7 +144,7 @@
 		<xsl:param name="publisher"    select="/.."/>
 		<xsl:param name="address"      select="/.."/>
 
-		<div class="place">
+		<address class="place">
 			<xsl:if test="$school">
 				<xsl:apply-templates select="common:node-set($school)"/>
 			</xsl:if>
@@ -180,7 +180,7 @@
 			<xsl:if test="$school or $organization or $institution or $publisher or $address">
 				<xsl:text>.</xsl:text>
 			</xsl:if>
-		</div>
+		</address>
 	</xsl:template>
 
 	<xsl:template match="b:field">
@@ -202,15 +202,15 @@
 	</xsl:template>
 
 	<xsl:template match="b:field[@name = 'publisher']/b:value">
-		<address class="publisher">
+		<span class="publisher">
 			<xsl:apply-templates/>
-		</address>
+		</span>
 	</xsl:template>
 
 	<xsl:template match="b:field[@name = 'school']/b:value">
-		<address class="school">
+		<span class="school">
 			<xsl:apply-templates/>
-		</address>
+		</span>
 	</xsl:template>
 
 	<xsl:template match="b:field[@name = 'journal']/b:value">
