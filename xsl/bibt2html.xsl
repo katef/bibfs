@@ -14,6 +14,13 @@
 
 	<xsl:output indent="yes"/>
 
+	<func:function name="str:ends-with">
+		<xsl:param name="string"/>
+		<xsl:param name="end"/>
+
+		<func:result select="substring($string, string-length($string) - string-length($end) + 1) != $end"/>
+	</func:function>
+
 	<func:function name="b:assert">
 		<xsl:param name="type"/>
 		<xsl:param name="key"/>
@@ -50,60 +57,62 @@
 		<xsl:param name="month"/>
 		<xsl:param name="year"/>
 
-		<xsl:choose>
-			<xsl:when test="$month">
-				<time datetime="{$year}-{$month}">
-					<xsl:choose>
-						<xsl:when test="$month =  1">
-							<xsl:text>Jan.</xsl:text>
-						</xsl:when>
-						<xsl:when test="$month =  2">
-							<xsl:text>Feb.</xsl:text>
-						</xsl:when>
-						<xsl:when test="$month =  3">
-							<xsl:text>March</xsl:text>
-						</xsl:when>
-						<xsl:when test="$month =  4">
-							<xsl:text>April</xsl:text>
-						</xsl:when>
-						<xsl:when test="$month =  5">
-							<xsl:text>May</xsl:text>
-						</xsl:when>
-						<xsl:when test="$month =  6">
-							<xsl:text>June</xsl:text>
-						</xsl:when>
-						<xsl:when test="$month =  7">
-							<xsl:text>July</xsl:text>
-						</xsl:when>
-						<xsl:when test="$month =  8">
-							<xsl:text>Aug.</xsl:text>
-						</xsl:when>
-						<xsl:when test="$month =  9">
-							<xsl:text>Sept.</xsl:text>
-						</xsl:when>
-						<xsl:when test="$month = 10">
-							<xsl:text>Oct.</xsl:text>
-						</xsl:when>
-						<xsl:when test="$month = 11">
-							<xsl:text>Nov.</xsl:text>
-						</xsl:when>
-						<xsl:when test="$month = 12">
-							<xsl:text>Dec.</xsl:text>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:value-of select="$month"/>
-						</xsl:otherwise>
-					</xsl:choose>
-					<xsl:text>&#8201;</xsl:text>
-					<xsl:apply-templates select="$year"/>
-				</time>
-			</xsl:when>
-			<xsl:otherwise>
-				<time datetime="{$year}">
-					<xsl:apply-templates select="$year"/>
-				</time>
-			</xsl:otherwise>
-		</xsl:choose>
+		<div class="monthyear">
+			<xsl:choose>
+				<xsl:when test="$month">
+					<time datetime="{$year}-{$month}">
+						<xsl:choose>
+							<xsl:when test="$month =  1">
+								<xsl:text>Jan.</xsl:text>
+							</xsl:when>
+							<xsl:when test="$month =  2">
+								<xsl:text>Feb.</xsl:text>
+							</xsl:when>
+							<xsl:when test="$month =  3">
+								<xsl:text>March</xsl:text>
+							</xsl:when>
+							<xsl:when test="$month =  4">
+								<xsl:text>April</xsl:text>
+							</xsl:when>
+							<xsl:when test="$month =  5">
+								<xsl:text>May</xsl:text>
+							</xsl:when>
+							<xsl:when test="$month =  6">
+								<xsl:text>June</xsl:text>
+							</xsl:when>
+							<xsl:when test="$month =  7">
+								<xsl:text>July</xsl:text>
+							</xsl:when>
+							<xsl:when test="$month =  8">
+								<xsl:text>Aug.</xsl:text>
+							</xsl:when>
+							<xsl:when test="$month =  9">
+								<xsl:text>Sept.</xsl:text>
+							</xsl:when>
+							<xsl:when test="$month = 10">
+								<xsl:text>Oct.</xsl:text>
+							</xsl:when>
+							<xsl:when test="$month = 11">
+								<xsl:text>Nov.</xsl:text>
+							</xsl:when>
+							<xsl:when test="$month = 12">
+								<xsl:text>Dec.</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="$month"/>
+							</xsl:otherwise>
+						</xsl:choose>
+						<xsl:text>&#8201;</xsl:text>
+						<xsl:apply-templates select="$year"/>
+					</time>
+				</xsl:when>
+				<xsl:otherwise>
+					<time datetime="{$year}">
+						<xsl:apply-templates select="$year"/>
+					</time>
+				</xsl:otherwise>
+			</xsl:choose>
+		</div>
 	</xsl:template>
 
 	<xsl:template name="location">
@@ -112,7 +121,7 @@
 		<xsl:param name="pages"   select="/.."/>
 		<xsl:param name="chapter" select="/.."/>
 
-		<span class="location">
+		<div class="location">
 			<xsl:apply-templates select="$volume"/>
 			<xsl:if test="$number">
 				<xsl:text>(</xsl:text>
@@ -127,7 +136,7 @@
 				<xsl:text> chapter&#xA0;</xsl:text>
 				<xsl:apply-templates select="common:node-set($chapter)"/>
 			</xsl:if>
-		</span>
+		</div>
 	</xsl:template>
 
 	<xsl:template name="place">
@@ -137,41 +146,43 @@
 		<xsl:param name="publisher"    select="/.."/>
 		<xsl:param name="address"      select="/.."/>
 
-		<xsl:if test="$school">
-			<xsl:apply-templates select="common:node-set($school)"/>
-		</xsl:if>
-
-		<xsl:if test="$organization">
+		<div class="place">
 			<xsl:if test="$school">
-				<xsl:text>, </xsl:text>
+				<xsl:apply-templates select="common:node-set($school)"/>
 			</xsl:if>
-			<xsl:apply-templates select="common:node-set($organization)"/>
-		</xsl:if>
 
-		<xsl:if test="$institution">
-			<xsl:if test="$school or $organization">
-				<xsl:text>, </xsl:text>
+			<xsl:if test="$organization">
+				<xsl:if test="$school">
+					<xsl:text>, </xsl:text>
+				</xsl:if>
+				<xsl:apply-templates select="common:node-set($organization)"/>
 			</xsl:if>
-			<xsl:apply-templates select="common:node-set($institution)"/>
-		</xsl:if>
 
-		<xsl:if test="$publisher">
-			<xsl:if test="$school or $organization or $institution">
-				<xsl:text>, </xsl:text>
+			<xsl:if test="$institution">
+				<xsl:if test="$school or $organization">
+					<xsl:text>, </xsl:text>
+				</xsl:if>
+				<xsl:apply-templates select="common:node-set($institution)"/>
 			</xsl:if>
-			<xsl:apply-templates select="common:node-set($publisher)"/>
-		</xsl:if>
 
-		<xsl:if test="$address">
-			<xsl:if test="$school or $organization or $institution or $publisher">
-				<xsl:text>. </xsl:text>
+			<xsl:if test="$publisher">
+				<xsl:if test="$school or $organization or $institution">
+					<xsl:text>, </xsl:text>
+				</xsl:if>
+				<xsl:apply-templates select="common:node-set($publisher)"/>
 			</xsl:if>
-			<xsl:apply-templates select="common:node-set($address)"/>
-		</xsl:if>
 
-		<xsl:if test="$school or $organization or $institution or $publisher or $address">
-			<xsl:text>.</xsl:text>
-		</xsl:if>
+			<xsl:if test="$address">
+				<xsl:if test="$school or $organization or $institution or $publisher">
+					<xsl:text>, </xsl:text>
+				</xsl:if>
+				<xsl:apply-templates select="common:node-set($address)"/>
+			</xsl:if>
+
+			<xsl:if test="$school or $organization or $institution or $publisher or $address">
+				<xsl:text>.</xsl:text>
+			</xsl:if>
+		</div>
 	</xsl:template>
 
 	<xsl:template match="b:field">
@@ -222,7 +233,7 @@
 		<xsl:text> </xsl:text>
 		<span class="note">
 			<xsl:apply-templates/>
-			<xsl:if test="substring(., string-length(.) - string-length('(') +1) != ')'">
+			<xsl:if test="str:ends-with(., '(')">
 				<xsl:text>.</xsl:text>
 			</xsl:if>
 		</span>
