@@ -556,17 +556,18 @@
 			<xsl:if test="$address">
 				<xsl:text> </xsl:text>
 				<xsl:apply-templates select="common:node-set($address)"/>
-				<xsl:text>, </xsl:text>
 			</xsl:if>
 
 			<xsl:if test="$howpublished">
-				<xsl:text> </xsl:text>
+				<xsl:text>. </xsl:text>
 				<xsl:apply-templates select="common:node-set($howpublished)"/>
 			</xsl:if>
 
-			<xsl:text>.</xsl:text>
+			<xsl:if test="not(common:node-set($others)/*) and not($note)">
+				<xsl:text>.</xsl:text>
+			</xsl:if>
 
-			<xsl:if test="$others">
+			<xsl:if test="common:node-set($others)">
 				<xsl:text> </xsl:text>
 				<xsl:apply-templates select="common:node-set($others)"/>	<!-- TODO: space before each -->
 			</xsl:if>
