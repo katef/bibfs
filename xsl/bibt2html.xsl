@@ -607,7 +607,7 @@
 				<li>
 					<!-- TODO: a rel="something" -->
 					<!-- TODO: variable for base path -->
-					<a href="{concat('/', 'bib')}" data-type="bib">
+					<a href="{concat('/', @key, '.bib')}" data-type="bib">
 						<abbr class="tex">
 							<xsl:text>Bɪʙ</xsl:text>
 							<xsl:text>T</xsl:text>
