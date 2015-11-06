@@ -130,6 +130,50 @@
 		</span>
 	</xsl:template>
 
+	<xsl:template name="place">
+		<xsl:param name="school"       select="/.."/>
+		<xsl:param name="organization" select="/.."/>
+		<xsl:param name="institution"  select="/.."/>
+		<xsl:param name="publisher"    select="/.."/>
+		<xsl:param name="address"      select="/.."/>
+
+		<xsl:if test="$school">
+			<xsl:apply-templates select="common:node-set($school)"/>
+		</xsl:if>
+
+		<xsl:if test="$organization">
+			<xsl:if test="$school">
+				<xsl:text>, </xsl:text>
+			</xsl:if>
+			<xsl:apply-templates select="common:node-set($organization)"/>
+		</xsl:if>
+
+		<xsl:if test="$institution">
+			<xsl:if test="$school or $organization">
+				<xsl:text>, </xsl:text>
+			</xsl:if>
+			<xsl:apply-templates select="common:node-set($institution)"/>
+		</xsl:if>
+
+		<xsl:if test="$publisher">
+			<xsl:if test="$school or $organization or $institution">
+				<xsl:text>, </xsl:text>
+			</xsl:if>
+			<xsl:apply-templates select="common:node-set($publisher)"/>
+		</xsl:if>
+
+		<xsl:if test="$address">
+			<xsl:if test="$school or $organization or $institution or $publisher">
+				<xsl:text>. </xsl:text>
+			</xsl:if>
+			<xsl:apply-templates select="common:node-set($address)"/>
+		</xsl:if>
+
+		<xsl:if test="$school or $organization or $institution or $publisher or $address">
+			<xsl:text>.</xsl:text>
+		</xsl:if>
+	</xsl:template>
+
 	<xsl:template match="b:field">
 		<xsl:apply-templates select="b:value"/>
 	</xsl:template>
@@ -178,7 +222,9 @@
 		<xsl:text> </xsl:text>
 		<span class="note">
 			<xsl:apply-templates/>
-			<xsl:text>.</xsl:text>
+			<xsl:if test="substring(., string-length(.) - string-length('(') +1) != ')'">
+				<xsl:text>.</xsl:text>
+			</xsl:if>
 		</span>
 	</xsl:template>
 
@@ -472,6 +518,7 @@
 			</xsl:if>
 
 			<xsl:if test="@type = 'phdthesis'">
+				<xsl:text> </xsl:text>
 				<abbr>PhD</abbr> <!-- TODO: or DPhil -->
 				<xsl:text> thesis.</xsl:text>
 			</xsl:if>
@@ -533,38 +580,19 @@
 				<xsl:apply-templates select="common:node-set($editor)"/>
 			</xsl:if>
 
-			<xsl:if test="$school">
-				<xsl:text> </xsl:text>
-				<xsl:apply-templates select="common:node-set($school)"/>
-			</xsl:if>
+			<xsl:text> </xsl:text>
 
-			<xsl:if test="$organization">
-				<xsl:text> </xsl:text>
-				<xsl:apply-templates select="common:node-set($organization)"/>
-			</xsl:if>
-
-			<xsl:if test="$institution">
-				<xsl:text> </xsl:text>
-				<xsl:apply-templates select="common:node-set($institution)"/>
-			</xsl:if>
-
-			<xsl:if test="$publisher">
-				<xsl:text> </xsl:text>
-				<xsl:apply-templates select="common:node-set($publisher)"/>
-			</xsl:if>
-
-			<xsl:if test="$address">
-				<xsl:text> </xsl:text>
-				<xsl:apply-templates select="common:node-set($address)"/>
-			</xsl:if>
+			<xsl:call-template name="place">
+				<xsl:with-param name="school"       select="$school"/>
+				<xsl:with-param name="organization" select="$organization"/>
+				<xsl:with-param name="institution"  select="$institution"/>
+				<xsl:with-param name="publisher"    select="$publisher"/>
+				<xsl:with-param name="address"      select="$address"/>
+			</xsl:call-template>
 
 			<xsl:if test="$howpublished">
-				<xsl:text>. </xsl:text>
+				<xsl:text> </xsl:text>
 				<xsl:apply-templates select="common:node-set($howpublished)"/>
-			</xsl:if>
-
-			<xsl:if test="not(common:node-set($others)/*) and not($note)">
-				<xsl:text>.</xsl:text>
 			</xsl:if>
 
 			<xsl:if test="common:node-set($others)">
