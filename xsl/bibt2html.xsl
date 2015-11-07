@@ -57,9 +57,17 @@
 		<xsl:param name="month"/>
 		<xsl:param name="year"/>
 
-		<xsl:choose>
-			<xsl:when test="$month">
-				<time datetime="{$year}-{$month}">
+		<time>
+			<xsl:attribute name="datetime">
+				<xsl:if test="$month">
+					<xsl:apply-templates select="$month"/>
+					<xsl:text>-</xsl:text>
+				</xsl:if>
+				<xsl:apply-templates select="$year"/>
+			</xsl:attribute>
+
+			<xsl:choose>
+				<xsl:when test="$month">
 					<xsl:choose>
 						<xsl:when test="$month =  1">
 							<xsl:text>Jan.</xsl:text>
@@ -103,14 +111,12 @@
 					</xsl:choose>
 					<xsl:text>&#8201;</xsl:text>
 					<xsl:apply-templates select="$year"/>
-				</time>
-			</xsl:when>
-			<xsl:otherwise>
-				<time datetime="{$year}">
+				</xsl:when>
+				<xsl:otherwise>
 					<xsl:apply-templates select="$year"/>
-				</time>
-			</xsl:otherwise>
-		</xsl:choose>
+				</xsl:otherwise>
+			</xsl:choose>
+		</time>
 	</xsl:template>
 
 	<xsl:template name="location">
@@ -578,8 +584,8 @@
 			<xsl:if test="$month or $year">
 				<xsl:text> </xsl:text>
 				<xsl:call-template name="monthyear">
-					<xsl:with-param name="month" select="$month"/>
-					<xsl:with-param name="year"  select="$year"/>
+					<xsl:with-param name="month" select="common:node-set($month)"/>
+					<xsl:with-param name="year"  select="common:node-set($year)"/>
 				</xsl:call-template>
 				<xsl:text>.</xsl:text>
 			</xsl:if>
