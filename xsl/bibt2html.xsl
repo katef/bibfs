@@ -310,9 +310,25 @@
 		<xsl:variable name="type" select="str:ext($file)"/>
 
 		<li>
-			<!-- TODO: a rel="something" -->
-			<!-- TODO: variable for base path -->
-			<a href="{concat('/', .)}">
+			<a>
+				<xsl:choose>
+					<xsl:when test="starts-with(., 'http://')">
+						<xsl:attribute name="href">
+							<xsl:value-of select="."/>
+						</xsl:attribute>
+						<xsl:attribute name="rel">
+							<xsl:value-of select="'external'"/>
+						</xsl:attribute>
+					</xsl:when>
+					<xsl:otherwise>
+						<!-- TODO: variable for base path -->
+						<!-- TODO: a rel="something" -->
+						<xsl:attribute name="href">
+							<xsl:value-of select="concat('/', .)"/>
+						</xsl:attribute>
+					</xsl:otherwise>
+				</xsl:choose>
+
 				<xsl:if test="$type">
 					<xsl:attribute name="data-type">
 						<xsl:value-of select="$type"/>
