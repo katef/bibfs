@@ -24,13 +24,13 @@
 	<func:function name="str:basename">
 		<xsl:param name="string"/>
 
-		<func:result select="str:tokenize(., '/')[last()]"/>
+		<func:result select="str:tokenize($string, '/')[last()]"/>
 	</func:function>
 
 	<func:function name="str:ext">
 		<xsl:param name="string"/>
 
-		<func:result select="str:tokenize(., '.')[last()]"/>
+		<func:result select="str:tokenize($string, '.')[last()]"/>
 	</func:function>
 
 	<func:function name="b:assert">
