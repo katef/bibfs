@@ -21,6 +21,18 @@
 		<func:result select="substring($string, string-length($string) - string-length($end) + 1) != $end"/>
 	</func:function>
 
+	<func:function name="str:basename">
+		<xsl:param name="string"/>
+
+		<func:result select="str:tokenize(., '/')[last()]"/>
+	</func:function>
+
+	<func:function name="str:ext">
+		<xsl:param name="string"/>
+
+		<func:result select="str:tokenize(., '.')[last()]"/>
+	</func:function>
+
 	<func:function name="b:assert">
 		<xsl:param name="type"/>
 		<xsl:param name="key"/>
@@ -294,7 +306,8 @@
 		<xsl:variable name="lower" select="'abcdefghijklmnopqrstuvwxyz'"/>
 		<xsl:variable name="upper" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
 
-		<xsl:variable name="type" select="substring-after(., '.')"/>
+		<xsl:variable name="file" select="str:basename(.)"/>
+		<xsl:variable name="type" select="str:ext($file)"/>
 
 		<li>
 			<!-- TODO: a rel="something" -->
