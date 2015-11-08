@@ -329,14 +329,14 @@
 					</xsl:otherwise>
 				</xsl:choose>
 
-				<xsl:if test="$type">
+				<xsl:if test="count(str:tokenize($file, '.')) &gt; 1">
 					<xsl:attribute name="data-type">
 						<xsl:value-of select="$type"/>
 					</xsl:attribute>
 				</xsl:if>
 
 				<xsl:choose>
-					<xsl:when test="$type">
+					<xsl:when test="count(str:tokenize($file, '.')) &gt; 1">
 						<xsl:value-of select="translate($type, $lower, $upper)"/>
 					</xsl:when>
 					<xsl:otherwise>
