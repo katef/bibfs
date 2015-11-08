@@ -339,6 +339,9 @@
 					<xsl:when test="count(str:tokenize($file, '.')) &gt; 1">
 						<xsl:value-of select="translate($type, $lower, $upper)"/>
 					</xsl:when>
+					<xsl:when test="starts-with(., 'http://')">
+						<xsl:text>HTML</xsl:text> <!-- assumed, for no extension -->
+					</xsl:when>
 					<xsl:otherwise>
 						<xsl:value-of select="."/>
 					</xsl:otherwise>
