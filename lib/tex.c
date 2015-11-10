@@ -26,6 +26,9 @@ static const struct {
 
 	{ "\\textasciitilde", "~" }, /* TODO: LaTeX? */
 
+	/* TODO: math mode only */
+	{ "\\log", "\\log" },
+
 	{ "\\S",    "\xC2\xA7"     },
 	{ "\\P",    "\xC2\xB6"     },
 	{ "\\dag",  "\xE2\x80\xA0" },
