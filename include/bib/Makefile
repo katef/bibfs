@@ -1,4 +1,4 @@
-.include "../../mk/top.mk"
+.include "../../share/mk/top.mk"
 
 STAGE_COPY += include/bib/bib.h
 STAGE_COPY += include/bib/debug.h

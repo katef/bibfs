@@ -1,4 +1,4 @@
-.include "../mk/top.mk"
+.include "../share/mk/top.mk"
 
 SRC += fuse/main.c
 SRC += fuse/filename.c

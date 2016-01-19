@@ -685,7 +685,7 @@
 					<!-- TODO: variable for base path -->
 					<a href="{concat('/', @key, '.bib')}" data-type="bib">
 						<abbr class="tex">
-							<xsl:text>Bɪʙ</xsl:text>
+							<xsl:text>Bib</xsl:text>
 							<xsl:text>T</xsl:text>
 							<sub>
 								<xsl:text>e</xsl:text>

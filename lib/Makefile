@@ -1,4 +1,4 @@
-.include "../mk/top.mk"
+.include "../share/mk/top.mk"
 
 SRC += lib/lex.c
 SRC += lib/bib.c

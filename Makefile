@@ -1,4 +1,4 @@
-.MAKEFLAGS: -r -m mk
+.MAKEFLAGS: -r -m share
 
 # targets
 all::  mkdir .WAIT dep .WAIT lib prog
