@@ -1,3 +1,9 @@
+/*
+ * Copyright 2014-2017 Katherine Flavel
+ *
+ * See LICENCE for the full copyright terms.
+ */
+
 #include <sys/types.h>
 
 #include <assert.h>

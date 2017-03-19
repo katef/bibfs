@@ -1,3 +1,9 @@
+/*
+ * Copyright 2014-2017 Katherine Flavel
+ *
+ * See LICENCE for the full copyright terms.
+ */
+
 #ifndef BIBFS_FUSE_FIELD_H
 #define BIBFS_FUSE_FIELD_H
 
