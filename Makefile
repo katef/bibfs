@@ -1,4 +1,4 @@
-.MAKEFLAGS: -r -m share
+.MAKEFLAGS: -r -m share/mk
 
 # targets
 all::  mkdir .WAIT dep .WAIT lib prog
@@ -27,15 +27,15 @@ TEST += /usr/share/texlive/texmf-dist/bibtex/bib/base/xampl.bib
 test:: ${BUILD}/bin/bibfs ${TEST}
 	${BUILD}/bin/bibt -da -e json ${.ALLSRC:M*.bib}
 
-.include <mk/subdir.mk>
-.include <mk/sid.mk>
-.include <mk/obj.mk>
-.include <mk/dep.mk>
-.include <mk/part.mk>
-.include <mk/ar.mk>
-.include <mk/so.mk>
-.include <mk/prog.mk>
-.include <mk/mkdir.mk>
-.include <mk/install.mk>
-.include <mk/clean.mk>
+.include <subdir.mk>
+.include <sid.mk>
+.include <obj.mk>
+.include <dep.mk>
+.include <part.mk>
+.include <ar.mk>
+.include <so.mk>
+.include <prog.mk>
+.include <mkdir.mk>
+.include <install.mk>
+.include <clean.mk>
 
