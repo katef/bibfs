@@ -10,6 +10,6 @@ SRC += out/values.c
 
 # explicitly not permitted by contractual obligation for fstat()
 .if ${CC:T:Mclang}
-CFLAGS_out/outs.c += -Wno-sign-conversion
+CFLAGS.out/outs.c += -Wno-sign-conversion
 .endif
 
