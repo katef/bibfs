@@ -13,6 +13,8 @@ CC     ?= gcc
 BUILD  ?= build
 PREFIX ?= /usr/local
 
+PKG += fuse
+
 # layout
 SUBDIR += include/bib
 SUBDIR += out
@@ -28,6 +30,7 @@ test:: ${BUILD}/bin/bibfs ${TEST}
 	${BUILD}/bin/bibt -da -e json ${.ALLSRC:M*.bib}
 
 .include <subdir.mk>
+.include <pkgconf.mk>
 .include <sid.mk>
 .include <obj.mk>
 .include <dep.mk>

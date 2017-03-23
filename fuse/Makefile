@@ -17,8 +17,8 @@ SRC += fuse/op_file.c
 PROG += bibfs
 
 .for src in ${SRC:Mfuse/main.c} ${SRC:Mfuse/op*.c}
-CFLAGS.${src} += `pkg-config fuse --cflags`
-DFLAGS.${src} += `pkg-config fuse --cflags`
+CFLAGS.${src} += ${CFLAGS.fuse}
+DFLAGS.${src} += ${CFLAGS.fuse}
 .endfor
 
 # <fuse/fuse_common.h> has trailing commas for enums
@@ -75,7 +75,7 @@ CFLAGS.fuse/op_field.c += -Wno-sign-conversion
 ${BUILD}/bin/bibfs: ${BUILD}/lib/${lib:R}.a
 .endfor
 
-LFLAGS.bibfs  ?= `pkg-config fuse --libs`
+LFLAGS.bibfs ?= ${LIBS.fuse}
 
 .for src in ${SRC:Mfuse/*.c}
 ${BUILD}/bin/bibfs: ${BUILD}/${src:R}.o
