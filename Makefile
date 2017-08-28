@@ -17,6 +17,7 @@ PKG += fuse
 
 # layout
 SUBDIR += include/bib
+SUBDIR += include
 SUBDIR += out
 SUBDIR += lib
 SUBDIR += bibt
