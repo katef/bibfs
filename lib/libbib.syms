@@ -1,0 +1,40 @@
+# <bib/bib.h>
+bib_new_entry
+bib_new_field
+bib_new_value
+bib_parse
+
+# <bib/free.h>
+bib_free_entry
+bib_free_field
+bib_free_value
+
+# <bib/lex.h>
+lex_next
+
+# <bib/out.h>
+out_bibtex
+out_docbook
+out_json
+out_xml
+out_zim
+out_zimtex
+
+bib_outs
+out_bibtex_entry
+lookup_delim
+out_values
+
+# <bib/tex.h>
+tex_escape
+tex_delim
+
+# <bib/refactor.h>
+bib_cull
+bib_merge
+bib_refactor
+
+# <bib/find.h>
+bib_count
+find_entry
+find_field

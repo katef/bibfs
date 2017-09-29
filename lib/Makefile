@@ -12,7 +12,8 @@ SRC += lib/tex.c
 
 PARSER += lib/parser.sid
 
-LIB += libbib
+LIB         += libbib
+SYMS.libbib += lib/libbib.syms
 
 # apparently a default: clause is not enough to satisfy -Weverything
 .if ${CC:T:Mclang}
