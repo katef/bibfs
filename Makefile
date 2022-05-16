@@ -14,14 +14,14 @@ CC     ?= gcc
 BUILD  ?= build
 PREFIX ?= /usr/local
 
-PKG += fuse
-
 # ${unix} is an arbitrary variable set by sys.mk
 .if defined(unix)
 .BEGIN::
 	@echo "We don't use sys.mk; run ${MAKE} with -r" >&2
 	@false
 .endif
+
+PKG += fuse
 
 # layout
 SUBDIR += include/bib
